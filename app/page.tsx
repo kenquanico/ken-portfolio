@@ -67,6 +67,84 @@ const recognition = [
   ["Mobile App Hackathon", "Tagisan ng Talino 2025", "1st Runner Up"],
 ];
 
+const documentResources = [
+  {
+    title: "Resume",
+    label: "Career Snapshot",
+    description:
+      "A concise PDF summary of my frontend, mobile, design, and project experience.",
+    href: "/docs/kenldry-resume.pdf",
+    fileName: "kenldry-resume.pdf",
+  },
+  {
+    title: "Capstone Study",
+    label: "Final Manuscript",
+    description:
+      "My full capstone manuscript, including the research background, methodology, system work, and results.",
+    href: "/docs/itmawd-12b-quanico-final-manuscript.pdf",
+    fileName: "itmawd-12b-quanico-final-manuscript.pdf",
+  },
+];
+
+const sampleProjects = [
+  {
+    name: "Pathway Dark",
+    category: "Landing Page",
+    description:
+      "Optimized landing page build with responsive sections, fast-loading UI patterns, clear conversion flow, and polished visual hierarchy.",
+    url: "https://pathway-dark.vercel.app/",
+  },
+  {
+    name: "Pathway Mauve",
+    category: "Landing Page",
+    description:
+      "Mobile-first marketing page focused on clean spacing, accessible contrast, SEO-friendly structure, and smooth cross-device presentation.",
+    url: "https://pathway-mauve-one.vercel.app/",
+  },
+  {
+    name: "FutureSphere",
+    category: "Product Website",
+    description:
+      "Modern product site with strong information architecture, performance-conscious layout, responsive content blocks, and high-impact brand storytelling.",
+    url: "https://futuresphere-two.vercel.app/",
+  },
+  {
+    name: "Vaultflow",
+    category: "SaaS Website",
+    description:
+      "SaaS-style interface demonstrating clear feature communication, scalable sections, conversion-focused CTAs, and production-ready responsive behavior.",
+    url: "https://vaultflow-smoky.vercel.app/",
+  },
+  {
+    name: "JustHome",
+    category: "Real Estate Website",
+    description:
+      "Real estate experience built for browsing clarity, mobile usability, visual trust, fast scanning, and structured property-focused content.",
+    url: "https://justhome-five.vercel.app/",
+  },
+  {
+    name: "TasteNet",
+    category: "Food Website",
+    description:
+      "Restaurant and discovery UI with appetite-driven visuals, intuitive navigation, mobile-first layout, and strong user flow from browse to action.",
+    url: "https://tastenet-nine.vercel.app/",
+  },
+  {
+    name: "Uifry",
+    category: "Finance App Website",
+    description:
+      "Finance app landing page emphasizing clean UI systems, SEO-ready page structure, responsive pricing/content sections, and credible product presentation.",
+    url: "https://uifry-one-tan.vercel.app/",
+  },
+  {
+    name: "Shop.co",
+    category: "E-commerce Website",
+    description:
+      "E-commerce storefront sample with product-led layout, mobile shopping patterns, accessible navigation, and a conversion-aware browsing experience.",
+    url: "https://shopco-kappa-three.vercel.app/",
+  },
+];
+
 function SectionLabel({ number, title }: { number: string; title: string }) {
   return (
     <div className="section-label">
@@ -142,6 +220,7 @@ export default function Home() {
 
         <nav className={`site-nav${menuOpen ? " is-open" : ""}`} aria-label="Main navigation">
           <a href="#about" onClick={closeMenu}>About</a>
+          <a href="#documents" onClick={closeMenu}>Documents</a>
           <a href="#experience" onClick={closeMenu}>Experience</a>
           <a href="#work" onClick={closeMenu}>Work</a>
           <a href="#contact" onClick={closeMenu}>Contact</a>
@@ -161,14 +240,17 @@ export default function Home() {
 
       <main id="main">
         <section className="hero section-shell" id="top">
-          <div className="hero-portrait" aria-hidden="true">
-            <div className="portrait-grid" />
-            <span className="portrait-initials">KQ</span>
+          <div className="hero-portrait">
+            <img
+              className="portrait-photo"
+              src="/images/ken-portrait.jpg"
+              alt="Portrait of Ken Aldrey Quanico"
+            />
             <span className="portrait-caption">Bacolod / PH</span>
           </div>
 
           <div className="hero-content">
-            <p className="eyebrow">Frontend + Mobile Developer / Designer</p>
+            <p className="eyebrow">Web Developer / Designer</p>
             <h1>
               I build digital products that feel
               <span className="hero-emphasis">clear, useful, and alive.</span>
@@ -230,8 +312,40 @@ export default function Home() {
           </aside>
         </section>
 
+        <section className="documents section-shell section-rule" id="documents" data-reveal>
+          <SectionLabel number="02" title="Documents" />
+          <div className="document-list">
+            {documentResources.map((document) => (
+              <article className="document-card" key={document.href}>
+                <div>
+                  <p className="document-label">{document.label}</p>
+                  <h3>{document.title}</h3>
+                  <p>{document.description}</p>
+                </div>
+                <div className="document-actions" aria-label={`${document.title} actions`}>
+                  <a
+                    className="button button-secondary"
+                    href={document.href}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    View <span aria-hidden="true">↗</span>
+                  </a>
+                  <a
+                    className="button button-primary"
+                    href={document.href}
+                    download={document.fileName}
+                  >
+                    Download <span aria-hidden="true">↓</span>
+                  </a>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
         <section className="experience section-shell section-rule" id="experience" data-reveal>
-          <SectionLabel number="02" title="Experience" />
+          <SectionLabel number="03" title="Experience" />
           <div className="timeline">
             {experiences.map((item) => (
               <article className="timeline-item" key={`${item.title}-${item.date}`}>
@@ -248,7 +362,7 @@ export default function Home() {
         </section>
 
         <section className="skills section-shell section-rule" data-reveal>
-          <SectionLabel number="03" title="Capabilities" />
+          <SectionLabel number="04" title="Capabilities" />
           <div className="skill-grid">
             {skillGroups.map((group) => (
               <article className="skill-group" key={group.title}>
@@ -264,74 +378,41 @@ export default function Home() {
 
         <section className="work section-shell section-rule" id="work" data-reveal>
           <div className="section-heading-row">
-            <SectionLabel number="04" title="Selected Work" />
-            <p>Project links and case studies coming next.</p>
+            <SectionLabel number="05" title="Sample Projects" />
+            <p>Live website samples available to open and review.</p>
           </div>
-          <div className="project-grid">
-            <article className="project-card project-card-featured">
-              <div className="project-visual health-visual" aria-hidden="true">
-                <span className="visual-label">HEALTH / 01</span>
-                <div className="health-window">
-                  <div className="health-sidebar" />
-                  <div className="health-content"><span /><span /><span /></div>
-                </div>
-                <div className="health-orbit" />
-              </div>
-              <div className="project-info">
-                <div>
-                  <p className="project-type">Frontend Development / 2025—26</p>
-                  <h3>AI Healthcare Platform</h3>
-                </div>
-                <p>
-                  A patient-centered product for finding doctors, managing appointments,
-                  and navigating healthcare services.
-                </p>
-                <span className="project-status">Case study soon</span>
-              </div>
-            </article>
-
-            <article className="project-card">
-              <div className="project-visual identity-visual" aria-hidden="true">
-                <span className="visual-label">IDENTITY / 02</span>
-                <span className="identity-word">FORM</span>
-                <span className="identity-symbol">✦</span>
-              </div>
-              <div className="project-info">
-                <div>
-                  <p className="project-type">Brand Identity / 2026</p>
-                  <h3>Business Liaison Identity</h3>
-                </div>
-                <p>
-                  A professional brand language designed to communicate trust across two
-                  connected service offerings.
-                </p>
-                <span className="project-status">Case study soon</span>
-              </div>
-            </article>
-
-            <article className="project-card">
-              <div className="project-visual salon-visual" aria-hidden="true">
-                <span className="visual-label">BEAUTY / 03</span>
-                <span className="salon-letter">S</span>
-                <div className="salon-line" />
-              </div>
-              <div className="project-info">
-                <div>
-                  <p className="project-type">Logo &amp; Graphic Design / 2025</p>
-                  <h3>Beauty Lounge Branding</h3>
-                </div>
-                <p>
-                  A feminine, scalable identity prepared for storefront signage,
-                  billboards, social media, and print.
-                </p>
-                <span className="project-status">Case study soon</span>
-              </div>
-            </article>
+          <div className="project-table" role="table" aria-label="Live sample projects">
+            <div className="project-table-head" role="row">
+              <span role="columnheader">Project</span>
+              <span role="columnheader">Type</span>
+              <span role="columnheader">Focus</span>
+              <span role="columnheader">Link</span>
+            </div>
+            {sampleProjects.map((project, index) => (
+              <a
+                className="project-row"
+                href={project.url}
+                key={project.url}
+                rel="noreferrer"
+                role="row"
+                target="_blank"
+              >
+                <span className="project-name" role="cell">
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  {project.name}
+                </span>
+                <span role="cell">{project.category}</span>
+                <p className="project-description" role="cell">{project.description}</p>
+                <span className="project-link" role="cell">
+                  Visit site <span aria-hidden="true">↗</span>
+                </span>
+              </a>
+            ))}
           </div>
         </section>
 
         <section className="recognition section-shell section-rule" data-reveal>
-          <SectionLabel number="05" title="Recognition" />
+          <SectionLabel number="06" title="Recognition" />
           <div className="recognition-list">
             {recognition.map(([title, subtitle, result], index) => (
               <article key={`${title}-${subtitle}`}>
