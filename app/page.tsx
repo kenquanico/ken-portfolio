@@ -72,7 +72,7 @@ const documentResources = [
     title: "Resume",
     label: "Career Snapshot",
     description:
-      "A concise PDF summary of my frontend, mobile, design, and project experience.",
+      "A concise PDF summary of my web development and project experience.",
     href: "/docs/kenldry-resume.pdf",
     fileName: "kenldry-resume.pdf",
   },
@@ -203,7 +203,9 @@ export default function Home() {
 
       <header className="site-header">
         <a className="wordmark" href="#top" aria-label="Ken Aldrey Quanico, home">
-          <span className="wordmark-mark">KQ</span>
+          <span className="wordmark-mark" aria-hidden="true">
+            <img src="/images/profile-icon.png" alt="" />
+          </span>
           <span className="wordmark-name">Ken Quanico</span>
         </a>
 

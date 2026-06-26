@@ -7,7 +7,8 @@ export const metadata: Metadata = {
   description:
     "Portfolio of Ken Aldrey Quanico, a frontend and mobile developer and graphic designer based in Bacolod, Philippines.",
   icons: {
-    icon: "/icon.svg",
+    icon: "/images/profile-icon.png",
+    apple: "/apple-icon.png",
   },
 };
 
