@@ -351,6 +351,7 @@ button {
 .documents,
 .experience,
 .skills,
+.certifications,
 .work,
 .recognition {
   display: grid;
@@ -553,7 +554,7 @@ button {
 
 .skill-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   border-top: 1px solid var(--line);
   border-left: 1px solid var(--line);
 }
@@ -585,6 +586,94 @@ button {
 
 .work {
   display: block;
+}
+
+.certifications {
+  display: block;
+}
+
+.certification-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+}
+
+.certification-card {
+  display: flex;
+  min-height: 390px;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 48px;
+  padding: clamp(22px, 2.5vw, 32px);
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+  transition: background-color 180ms ease, transform 180ms ease;
+}
+
+.certification-card:hover {
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+  transform: translateY(-4px);
+}
+
+.certification-meta,
+.certification-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.certification-meta,
+.certification-issuer,
+.certification-link {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.certification-meta,
+.certification-skills {
+  color: var(--muted);
+}
+
+.certification-issuer {
+  margin: 0 0 18px;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.certification-card h3 {
+  margin: 0;
+  font-size: clamp(30px, 3.5vw, 48px);
+  letter-spacing: -0.06em;
+  line-height: 0.95;
+}
+
+.certification-skills {
+  margin: 22px 0 0;
+  font-size: 13px;
+}
+
+.certification-footer {
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.certification-footer strong {
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.certification-link {
+  font-weight: 700;
+}
+
+.certification-link:hover,
+.certification-link:focus-visible {
+  color: var(--accent);
 }
 
 .section-heading-row {
@@ -864,6 +953,7 @@ button {
   .documents,
   .experience,
   .skills,
+  .certifications,
   .recognition {
     grid-template-columns: 1fr;
   }
@@ -892,6 +982,14 @@ button {
   .project-row {
     grid-template-columns: minmax(180px, 0.85fr) minmax(130px, 0.55fr) minmax(220px, 1fr) auto;
     gap: 18px;
+  }
+
+  .certification-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .certification-card {
+    min-height: 330px;
   }
 }
 
@@ -939,6 +1037,11 @@ button {
   .copy-columns,
   .skill-grid {
     grid-template-columns: 1fr;
+  }
+
+  .certification-footer {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .profile-card {

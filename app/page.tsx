@@ -41,7 +41,7 @@ const skillGroups = [
   {
     index: "A",
     title: "Frontend",
-    skills: ["React", "Vue.js", "Next.js", "TypeScript", "Responsive UI"],
+    skills: ["React", "Vue.js", "Next.js", "TypeScript", "Tailwind CSS", "Figma"],
   },
   {
     index: "B",
@@ -59,12 +59,47 @@ const skillGroups = [
     title: "Visual Design",
     skills: ["Brand identity", "Logo design", "UI design", "Graphic design", "Design systems"],
   },
+  {
+    index: "D",
+    title: "Backend & Cloud",
+    skills: ["PHP", "Laravel", "PostgreSQL", "Cloud platforms", "API development"],
+  },
 ];
 
 const recognition = [
   ["Mobile App Hackathon", "Tagisan ng Talino 2026", "1st Runner Up"],
   ["Research Colloquium", "Innovation recognition", "Best Innovation"],
   ["Mobile App Hackathon", "Tagisan ng Talino 2025", "1st Runner Up"],
+];
+
+const certifications = [
+  {
+    title: "Software Engineering",
+    issuer: "TestDome",
+    distinction: "Top 10%",
+    level: "Gold certificate",
+    skills: "OOP & design patterns, data structures & algorithms, REST APIs, and software architecture",
+    issued: "Jun 2026",
+    url: "https://www.testdome.com/certificates/dbd71a053d964a0386188d4355eff557",
+  },
+  {
+    title: "Machine Learning",
+    issuer: "TestDome",
+    distinction: "Top 25%",
+    level: "Silver certificate",
+    skills: "Machine learning and Python for machine learning",
+    issued: "Jun 2026",
+    url: "https://www.testdome.com/certificates/d76421f240084614854a9fc03a05920f",
+  },
+  {
+    title: "TypeScript",
+    issuer: "TestDome",
+    distinction: "Top 25%",
+    level: "Silver certificate",
+    skills: "TypeScript",
+    issued: "Jun 2026",
+    url: "https://www.testdome.com/certificates/25a7d6e6fdb14b3e88badc0fd991a09f",
+  },
 ];
 
 const documentResources = [
@@ -224,6 +259,7 @@ export default function Home() {
           <a href="#about" onClick={closeMenu}>About</a>
           <a href="#documents" onClick={closeMenu}>Documents</a>
           <a href="#experience" onClick={closeMenu}>Experience</a>
+          <a href="#certifications" onClick={closeMenu}>Certifications</a>
           <a href="#work" onClick={closeMenu}>Work</a>
           <a href="#contact" onClick={closeMenu}>Contact</a>
         </nav>
@@ -378,9 +414,47 @@ export default function Home() {
           </div>
         </section>
 
+        <section
+          className="certifications section-shell section-rule"
+          id="certifications"
+          data-reveal
+        >
+          <div className="section-heading-row">
+            <SectionLabel number="05" title="Certifications" />
+            <p>Verified technical assessments issued by TestDome.</p>
+          </div>
+          <div className="certification-grid">
+            {certifications.map((certificate, index) => (
+              <article className="certification-card" key={certificate.url}>
+                <div className="certification-meta">
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <span>{certificate.issued}</span>
+                </div>
+                <div>
+                  <p className="certification-issuer">{certificate.issuer} / {certificate.level}</p>
+                  <h3>{certificate.title}</h3>
+                  <p className="certification-skills">{certificate.skills}</p>
+                </div>
+                <div className="certification-footer">
+                  <strong>{certificate.distinction}</strong>
+                  <a
+                    className="certification-link"
+                    href={certificate.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={`View ${certificate.title} certificate on TestDome`}
+                  >
+                    View certificate <span aria-hidden="true">↗</span>
+                  </a>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
         <section className="work section-shell section-rule" id="work" data-reveal>
           <div className="section-heading-row">
-            <SectionLabel number="05" title="Sample Projects" />
+            <SectionLabel number="06" title="Sample Projects" />
             <p>Live website samples available to open and review.</p>
           </div>
           <div className="project-table" role="table" aria-label="Live sample projects">
@@ -414,7 +488,7 @@ export default function Home() {
         </section>
 
         <section className="recognition section-shell section-rule" data-reveal>
-          <SectionLabel number="06" title="Recognition" />
+          <SectionLabel number="07" title="Recognition" />
           <div className="recognition-list">
             {recognition.map(([title, subtitle, result], index) => (
               <article key={`${title}-${subtitle}`}>
