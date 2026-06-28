@@ -75,30 +75,31 @@ const recognition = [
 const certifications = [
   {
     title: "Software Engineering",
-    issuer: "TestDome",
-    distinction: "Top 10%",
-    level: "Gold certificate",
-    skills: "OOP & design patterns, data structures & algorithms, REST APIs, and software architecture",
-    issued: "Jun 2026",
     url: "https://www.testdome.com/certificates/dbd71a053d964a0386188d4355eff557",
   },
   {
     title: "Machine Learning",
-    issuer: "TestDome",
-    distinction: "Top 25%",
-    level: "Silver certificate",
-    skills: "Machine learning and Python for machine learning",
-    issued: "Jun 2026",
     url: "https://www.testdome.com/certificates/d76421f240084614854a9fc03a05920f",
   },
   {
     title: "TypeScript",
-    issuer: "TestDome",
-    distinction: "Top 25%",
-    level: "Silver certificate",
-    skills: "TypeScript",
-    issued: "Jun 2026",
     url: "https://www.testdome.com/certificates/25a7d6e6fdb14b3e88badc0fd991a09f",
+  },
+  {
+    title: "Introduction to Artificial Intelligence (AI)",
+    url: "https://www.coursera.org/account/accomplishments/verify/XRM1DC81TF5M",
+  },
+  {
+    title: "Introduction to Software Engineering",
+    url: "https://www.coursera.org/account/accomplishments/verify/KWPYK654VX9N",
+  },
+  {
+    title: "Programming with JavaScript",
+    url: "https://www.coursera.org/account/accomplishments/verify/GVCKP54JB3Q4",
+  },
+  {
+    title: "Deep Learning Specialization",
+    url: "https://www.coursera.org/account/accomplishments/specialization/I2INLZ6FCOMH",
   },
 ];
 
@@ -419,34 +420,20 @@ export default function Home() {
           id="certifications"
           data-reveal
         >
-          <div className="section-heading-row">
-            <SectionLabel number="05" title="Certifications" />
-            <p>Verified technical assessments issued by TestDome.</p>
-          </div>
-          <div className="certification-grid">
-            {certifications.map((certificate, index) => (
+          <SectionLabel number="05" title="Certifications" />
+          <div className="certification-list">
+            {certifications.map((certificate) => (
               <article className="certification-card" key={certificate.url}>
-                <div className="certification-meta">
-                  <span>{String(index + 1).padStart(2, "0")}</span>
-                  <span>{certificate.issued}</span>
-                </div>
-                <div>
-                  <p className="certification-issuer">{certificate.issuer} / {certificate.level}</p>
-                  <h3>{certificate.title}</h3>
-                  <p className="certification-skills">{certificate.skills}</p>
-                </div>
-                <div className="certification-footer">
-                  <strong>{certificate.distinction}</strong>
-                  <a
-                    className="certification-link"
-                    href={certificate.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label={`View ${certificate.title} certificate on TestDome`}
-                  >
-                    View certificate <span aria-hidden="true">↗</span>
-                  </a>
-                </div>
+                <h3>{certificate.title}</h3>
+                <a
+                  className="certification-link"
+                  href={certificate.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={`View ${certificate.title} certificate`}
+                >
+                  View <span aria-hidden="true">↗</span>
+                </a>
               </article>
             ))}
           </div>
