@@ -75,30 +75,37 @@ const recognition = [
 const certifications = [
   {
     title: "Software Engineering",
+    issuer: "TestDome",
     url: "https://www.testdome.com/certificates/dbd71a053d964a0386188d4355eff557",
   },
   {
     title: "Machine Learning",
+    issuer: "TestDome",
     url: "https://www.testdome.com/certificates/d76421f240084614854a9fc03a05920f",
   },
   {
     title: "TypeScript",
+    issuer: "TestDome",
     url: "https://www.testdome.com/certificates/25a7d6e6fdb14b3e88badc0fd991a09f",
   },
   {
     title: "Introduction to Artificial Intelligence (AI)",
+    issuer: "IBM",
     url: "https://www.coursera.org/account/accomplishments/verify/XRM1DC81TF5M",
   },
   {
     title: "Introduction to Software Engineering",
+    issuer: "IBM",
     url: "https://www.coursera.org/account/accomplishments/verify/KWPYK654VX9N",
   },
   {
     title: "Programming with JavaScript",
+    issuer: "Meta",
     url: "https://www.coursera.org/account/accomplishments/verify/GVCKP54JB3Q4",
   },
   {
-    title: "Deep Learning Specialization",
+    title: "Google Cloud Generative AI Leader",
+    issuer: "Google Cloud",
     url: "https://www.coursera.org/account/accomplishments/specialization/I2INLZ6FCOMH",
   },
 ];
@@ -424,7 +431,10 @@ export default function Home() {
           <div className="certification-list">
             {certifications.map((certificate) => (
               <article className="certification-card" key={certificate.url}>
-                <h3>{certificate.title}</h3>
+                <div>
+                  <p className="certification-issuer">{certificate.issuer}</p>
+                  <h3>{certificate.title}</h3>
+                </div>
                 <a
                   className="certification-link"
                   href={certificate.url}
