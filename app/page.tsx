@@ -385,8 +385,9 @@ export default function Home() {
         {(pathname === "/" || pathname === "/projects") && <section className="projects section-shell section-rule page-section" id="projects" data-reveal>
           <div className="projects-page">
             <div className="section-heading-row">
-            <SectionLabel number={pathname === "/" ? "01" : "02"} title="Selected Projects" />
-            <p>Selected product interfaces demonstrating modern engineering and thoughtful execution.</p>
+              <SectionLabel number={pathname === "/" ? "01" : "02"} title="Selected Projects" />
+              <p>Selected product interfaces demonstrating modern engineering and thoughtful execution.</p>
+              {pathname === "/" && <a className="section-see-all" href="/projects">See all ↗</a>}
             </div>
             {pathname === "/" ? <div className="project-deck">
               {homepageProjects.map((project, index) => (
@@ -423,7 +424,10 @@ export default function Home() {
 
         {(pathname === "/" || pathname === "/experience") && <section className="experience section-shell section-rule page-section" id="experience" data-reveal>
           <div className="experience-page">
-            <SectionLabel number={pathname === "/" ? "02" : "03"} title="Experience" />
+            <div className="section-page-heading">
+              <SectionLabel number={pathname === "/" ? "02" : "03"} title="Experience" />
+              {pathname === "/" && <a className="section-see-all" href="/experience">See all ↗</a>}
+            </div>
             <p className="section-intro">Selected engineering, product, and design work across technology, healthcare, education, and small business.</p>
             <div className="experience-rail">
               {experiences.map((item, index) => (
@@ -444,7 +448,10 @@ export default function Home() {
 
         {(pathname === "/" || pathname === "/certifications") && <section className="certifications section-shell section-rule page-section" id="certifications" data-reveal>
           <div className="certifications-page">
-            <SectionLabel number={pathname === "/" ? "03" : "04"} title="Certifications" />
+            <div className="section-page-heading">
+              <SectionLabel number={pathname === "/" ? "03" : "04"} title="Certifications" />
+              {pathname === "/" && <a className="section-see-all" href="/certifications">See all ↗</a>}
+            </div>
             <p className="section-intro">Verified credentials across software engineering, web development, machine learning, and generative AI.</p>
             <div className="certification-wall">
               {(pathname === "/" ? homepageCertifications : certifications).map((certificate, index) => (
@@ -463,7 +470,7 @@ export default function Home() {
         {pathname === "/" && <section className="github-section section-shell section-rule" id="github" data-reveal>
           <div className="github-heading">
             <SectionLabel number="04" title="GitHub Activity" />
-            <a href="https://github.com/kenquanico" target="_blank" rel="noreferrer">@kenquanico ↗</a>
+            <a href="https://github.com/kenquanico" target="_blank" rel="noreferrer">See all ↗</a>
           </div>
           <a className="github-chart" href="https://github.com/kenquanico" target="_blank" rel="noreferrer" aria-label="View Ken Quanico on GitHub">
             <span className="github-months" aria-hidden="true">{githubMonths.map((month) => <span key={month}>{month}</span>)}</span>

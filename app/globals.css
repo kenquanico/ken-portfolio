@@ -142,6 +142,9 @@ button { color: inherit; font: inherit; }
 
 .section-heading-row { display: flex; align-items: start; justify-content: space-between; gap: 28px; margin-bottom: 34px; }
 .section-heading-row > p { max-width: 420px; margin: 0; color: var(--muted); font-size: 12px; line-height: 1.65; }
+.section-page-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; }
+.section-see-all { flex: 0 0 auto; color: var(--muted); font-family: ui-monospace, monospace; font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
+.section-see-all:hover, .section-see-all:focus-visible { color: var(--text); }
 .project-spotlight { padding: clamp(22px, 4vw, 32px); border: 1px solid var(--line); border-radius: 18px; background: linear-gradient(135deg, var(--surface), color-mix(in srgb, var(--surface) 55%, var(--bg))); }
 .spotlight-main { display: flex; align-items: center; gap: 20px; }
 .project-logo { width: 50px; height: 50px; flex: 0 0 auto; border: 0; border-radius: 12px; object-fit: contain; background: transparent; }
