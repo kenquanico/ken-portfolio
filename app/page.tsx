@@ -264,11 +264,11 @@ export default function Home() {
         </button>
 
         <nav className={`site-nav${menuOpen ? " is-open" : ""}`} aria-label="Main navigation">
-          <a href="#about" onClick={closeMenu}>About</a>
-          <a href="#documents" onClick={closeMenu}>Documents</a>
+          <a href="#profile" onClick={closeMenu}>Profile</a>
+          <a href="#projects" onClick={closeMenu}>Projects</a>
           <a href="#experience" onClick={closeMenu}>Experience</a>
-          <a href="#certifications" onClick={closeMenu}>Certifications</a>
-          <a href="#work" onClick={closeMenu}>Work</a>
+          <a href="#credentials" onClick={closeMenu}>Credentials</a>
+          <a href="#documents" onClick={closeMenu}>Documents</a>
           <a href="#contact" onClick={closeMenu}>Contact</a>
         </nav>
 
@@ -285,7 +285,7 @@ export default function Home() {
       </header>
 
       <main id="main">
-        <section className="hero section-shell" id="top">
+        <section className="hero section-shell" id="top" aria-labelledby="hero-title">
           <div className="hero-portrait">
             <img
               className="portrait-photo"
@@ -297,7 +297,7 @@ export default function Home() {
 
           <div className="hero-content">
             <p className="eyebrow">Web Developer / Designer</p>
-            <h1>
+            <h1 id="hero-title">
               I build digital products that feel
               <span className="hero-emphasis">clear, useful, and alive.</span>
             </h1>
@@ -326,66 +326,42 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="about section-shell section-rule" id="about" data-reveal>
-          <SectionLabel number="01" title="About" />
-          <div className="about-copy">
-            <p className="lead">
-              I bridge design and implementation to make products that are both
-              technically sound and visually polished.
-            </p>
+        <section className="profile section-shell section-rule" id="profile" data-reveal>
+          <SectionLabel number="01" title="Professional Profile" />
+          <div className="profile-content">
+            <p className="lead">I bridge design and implementation to make products that are both technically sound and visually polished.</p>
             <div className="copy-columns">
-              <p>
-                My work spans React, TypeScript, React Native, modern frontend
-                development, and AI-powered applications. I care about clean,
-                maintainable code, accessibility, and performance—the quieter details that
-                make an experience dependable.
-              </p>
-              <p>
-                A background in branding, logo design, and graphic design lets me think
-                beyond individual screens. I enjoy collaborating across disciplines and
-                turning complex needs into interfaces people can understand quickly.
-              </p>
+              <p>My work spans React, TypeScript, React Native, modern frontend development, and AI-powered applications. I care about clean, maintainable code, accessibility, and performance—the quieter details that make an experience dependable.</p>
+              <p>A background in branding, logo design, and graphic design lets me think beyond individual screens. I enjoy collaborating across disciplines and turning complex needs into interfaces people can understand quickly.</p>
+            </div>
+            <div className="capability-grid" aria-label="Capabilities">
+              {skillGroups.map((group) => (
+                <article className="capability-group" key={group.title}>
+                  <p className="skill-index">{group.index}</p>
+                  <h3>{group.title}</h3>
+                  <p>{group.skills.join(" · ")}</p>
+                </article>
+              ))}
             </div>
           </div>
-          <aside className="profile-card" aria-label="Profile summary">
-            <p className="profile-card-kicker">Profile / 2026</p>
-            <div className="profile-monogram">KQ</div>
-            <div>
-              <p className="profile-name">Ken Aldrey<br />Quanico</p>
-              <p className="profile-role">Developer<br />&amp; Designer</p>
-            </div>
-            <p className="profile-place">10.6765° N<br />122.9509° E</p>
-          </aside>
         </section>
 
-        <section className="documents section-shell section-rule" id="documents" data-reveal>
-          <SectionLabel number="02" title="Documents" />
-          <div className="document-list">
-            {documentResources.map((document) => (
-              <article className="document-card" key={document.href}>
-                <div>
-                  <p className="document-label">{document.label}</p>
-                  <h3>{document.title}</h3>
-                  <p>{document.description}</p>
-                </div>
-                <div className="document-actions" aria-label={`${document.title} actions`}>
-                  <a
-                    className="button button-secondary"
-                    href={document.href}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    View <span aria-hidden="true">↗</span>
-                  </a>
-                  <a
-                    className="button button-primary"
-                    href={document.href}
-                    download={document.fileName}
-                  >
-                    Download <span aria-hidden="true">↓</span>
-                  </a>
-                </div>
-              </article>
+        <section className="projects section-shell section-rule" id="projects" data-reveal>
+          <div className="section-heading-row">
+            <SectionLabel number="02" title="Selected Projects" />
+            <p>Live website samples available to open and review.</p>
+          </div>
+          <div className="project-table" role="table" aria-label="Live sample projects">
+            <div className="project-table-head" role="row">
+              <span role="columnheader">Project</span><span role="columnheader">Type</span><span role="columnheader">Focus</span><span role="columnheader">Link</span>
+            </div>
+            {sampleProjects.map((project, index) => (
+              <a className="project-row" href={project.url} key={project.url} rel="noreferrer" role="row" target="_blank">
+                <span className="project-name" role="cell"><span>{String(index + 1).padStart(2, "0")}</span>{project.name}</span>
+                <span className="project-type" role="cell">{project.category}</span>
+                <p className="project-description" role="cell">{project.description}</p>
+                <span className="project-link" role="cell">Visit site <span aria-hidden="true">↗</span></span>
+              </a>
             ))}
           </div>
         </section>
@@ -407,97 +383,54 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="skills section-shell section-rule" data-reveal>
-          <SectionLabel number="04" title="Capabilities" />
-          <div className="skill-grid">
-            {skillGroups.map((group) => (
-              <article className="skill-group" key={group.title}>
-                <p className="skill-index">{group.index}</p>
-                <h3>{group.title}</h3>
-                <ul>
-                  {group.skills.map((skill) => <li key={skill}>{skill}</li>)}
-                </ul>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section
-          className="certifications section-shell section-rule"
-          id="certifications"
-          data-reveal
-        >
-          <SectionLabel number="05" title="Certifications" />
-          <div className="certification-list">
-            {certifications.map((certificate) => (
-              <article className="certification-card" key={certificate.url}>
-                <div>
-                  <p className="certification-issuer">{certificate.issuer}</p>
-                  <h3>{certificate.title}</h3>
-                </div>
-                <a
-                  className="certification-link"
-                  href={certificate.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label={`View ${certificate.title} certificate`}
-                >
-                  View <span aria-hidden="true">↗</span>
-                </a>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="work section-shell section-rule" id="work" data-reveal>
-          <div className="section-heading-row">
-            <SectionLabel number="06" title="Sample Projects" />
-            <p>Live website samples available to open and review.</p>
-          </div>
-          <div className="project-table" role="table" aria-label="Live sample projects">
-            <div className="project-table-head" role="row">
-              <span role="columnheader">Project</span>
-              <span role="columnheader">Type</span>
-              <span role="columnheader">Focus</span>
-              <span role="columnheader">Link</span>
+        <section className="credentials section-shell section-rule" id="credentials" data-reveal>
+          <SectionLabel number="04" title="Credentials & Recognition" />
+          <div className="proof-grid">
+            <div>
+              <p className="subsection-title">Certifications</p>
+              <div className="certification-list">
+                {certifications.map((certificate) => (
+                  <article className="certification-row" key={certificate.url}>
+                    <p className="certification-issuer">{certificate.issuer}</p>
+                    <h3>{certificate.title}</h3>
+                    <a className="text-link" href={certificate.url} target="_blank" rel="noreferrer" aria-label={`View ${certificate.title} certificate`}>View certificate <span aria-hidden="true">↗</span></a>
+                  </article>
+                ))}
+              </div>
             </div>
-            {sampleProjects.map((project, index) => (
-              <a
-                className="project-row"
-                href={project.url}
-                key={project.url}
-                rel="noreferrer"
-                role="row"
-                target="_blank"
-              >
-                <span className="project-name" role="cell">
-                  <span>{String(index + 1).padStart(2, "0")}</span>
-                  {project.name}
-                </span>
-                <span role="cell">{project.category}</span>
-                <p className="project-description" role="cell">{project.description}</p>
-                <span className="project-link" role="cell">
-                  Visit site <span aria-hidden="true">↗</span>
-                </span>
-              </a>
-            ))}
+            <div>
+              <p className="subsection-title">Recognition</p>
+              <div className="recognition-list">
+                {recognition.map(([title, subtitle, result], index) => (
+                  <article key={`${title}-${subtitle}`}>
+                    <span>{String(index + 1).padStart(2, "0")}</span>
+                    <div><h3>{title}</h3><p>{subtitle}</p></div>
+                    <strong>{result}</strong>
+                  </article>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 
-        <section className="recognition section-shell section-rule" data-reveal>
-          <SectionLabel number="07" title="Recognition" />
-          <div className="recognition-list">
-            {recognition.map(([title, subtitle, result], index) => (
-              <article key={`${title}-${subtitle}`}>
-                <span>{String(index + 1).padStart(2, "0")}</span>
-                <div><h3>{title}</h3><p>{subtitle}</p></div>
-                <strong>{result}</strong>
+        <section className="documents section-shell section-rule" id="documents" data-reveal>
+          <SectionLabel number="05" title="Documents" />
+          <div className="document-list">
+            {documentResources.map((document) => (
+              <article className="document-row" key={document.href}>
+                <div><p className="document-label">{document.label}</p><h3>{document.title}</h3></div>
+                <p>{document.description}</p>
+                <div className="document-actions" aria-label={`${document.title} actions`}>
+                  <a className="text-link" href={document.href} target="_blank" rel="noreferrer">View <span aria-hidden="true">↗</span></a>
+                  <a className="text-link" href={document.href} download={document.fileName}>Download <span aria-hidden="true">↓</span></a>
+                </div>
               </article>
             ))}
           </div>
         </section>
 
         <section className="contact section-shell" id="contact" data-reveal>
+          <SectionLabel number="06" title="Contact" />
           <p className="eyebrow">Have a project, role, or idea in mind?</p>
           <h2>Let’s make something<br />worth remembering.</h2>
           <a className="contact-email" href="mailto:nekquanico@gmail.com">
