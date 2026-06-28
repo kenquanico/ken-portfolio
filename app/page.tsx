@@ -188,9 +188,10 @@ const sampleProjects = [
   },
 ];
 
-function SectionLabel({ title }: { number: string; title: string }) {
+function SectionLabel({ number, title }: { number: string; title: string }) {
   return (
     <div className="section-label">
+      <span>{number}</span>
       <h2>{title}</h2>
     </div>
   );
@@ -198,6 +199,7 @@ function SectionLabel({ title }: { number: string; title: string }) {
 
 export default function Home() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const stored = window.localStorage.getItem("ken-portfolio-theme");
@@ -218,11 +220,55 @@ export default function Home() {
     window.localStorage.setItem("ken-portfolio-theme", nextTheme);
   }
 
+  function closeMenu() {
+    setMenuOpen(false);
+  }
+
   return (
     <>
       <a className="skip-link" href="#main">
         Skip to content
       </a>
+
+      <header className="site-header">
+        <a className="wordmark" href="#top" aria-label="Ken Aldrey Quanico, home">
+          <span className="wordmark-mark" aria-hidden="true">
+            <img src="/images/profile-icon.png" alt="" />
+          </span>
+          <span className="wordmark-name">Ken Quanico</span>
+        </a>
+
+        <button
+          className="menu-toggle"
+          type="button"
+          aria-label="Toggle navigation"
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          <span />
+          <span />
+        </button>
+
+        <nav className={`site-nav${menuOpen ? " is-open" : ""}`} aria-label="Main navigation">
+          <a href="#profile" onClick={closeMenu}>Profile</a>
+          <a href="#projects" onClick={closeMenu}>Projects</a>
+          <a href="#experience" onClick={closeMenu}>Experience</a>
+          <a href="#credentials" onClick={closeMenu}>Credentials</a>
+          <a href="#documents" onClick={closeMenu}>Documents</a>
+          <a href="#contact" onClick={closeMenu}>Contact</a>
+        </nav>
+
+        <button
+          className="theme-toggle"
+          type="button"
+          aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+          aria-pressed={theme === "dark"}
+          onClick={toggleTheme}
+        >
+          <span className="theme-dot" aria-hidden="true" />
+          <span>{theme === "dark" ? "Light" : "Dark"}</span>
+        </button>
+      </header>
 
       <main id="main">
         <section className="hero section-shell" id="top" aria-labelledby="hero-title">
@@ -236,16 +282,6 @@ export default function Home() {
           </div>
 
           <div className="hero-content">
-            <button
-              className="theme-toggle hero-theme"
-              type="button"
-              aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
-              aria-pressed={theme === "dark"}
-              onClick={toggleTheme}
-            >
-              <span className="theme-dot" aria-hidden="true" />
-              <span>{theme === "dark" ? "Light" : "Dark"}</span>
-            </button>
             <p className="eyebrow">Web Developer / Designer</p>
             <h1 id="hero-title">
               I build digital products that feel
