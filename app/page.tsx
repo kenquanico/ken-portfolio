@@ -89,45 +89,94 @@ const certifications = [
   {
     title: "Software Engineering",
     issuer: "TestDome",
+    category: "Software Engineering",
     logo: "/logos/testdome.svg",
     url: "https://www.testdome.com/certificates/dbd71a053d964a0386188d4355eff557",
   },
   {
     title: "Machine Learning",
     issuer: "TestDome",
+    category: "AI & Machine Learning",
     logo: "/logos/testdome.svg",
     url: "https://www.testdome.com/certificates/d76421f240084614854a9fc03a05920f",
   },
   {
     title: "TypeScript",
     issuer: "TestDome",
+    category: "Web Development",
     logo: "/logos/testdome.svg",
     url: "https://www.testdome.com/certificates/25a7d6e6fdb14b3e88badc0fd991a09f",
   },
   {
     title: "Introduction to Artificial Intelligence (AI)",
     issuer: "IBM",
+    category: "AI & Machine Learning",
     logo: "/logos/ibm.svg",
     url: "https://www.coursera.org/account/accomplishments/verify/XRM1DC81TF5M",
   },
   {
     title: "Introduction to Software Engineering",
     issuer: "IBM",
+    category: "Software Engineering",
     logo: "/logos/ibm.svg",
     url: "https://www.coursera.org/account/accomplishments/verify/KWPYK654VX9N",
   },
   {
     title: "Programming with JavaScript",
     issuer: "Meta",
+    category: "Web Development",
     logo: "/logos/meta.svg",
     url: "https://www.coursera.org/account/accomplishments/verify/GVCKP54JB3Q4",
   },
   {
     title: "Google Cloud Generative AI Leader",
     issuer: "Google Cloud",
+    category: "AI & Machine Learning",
     logo: "/logos/google-cloud.svg",
     url: "https://www.coursera.org/account/accomplishments/specialization/I2INLZ6FCOMH",
   },
+  {
+    title: "Python for Data Science, AI & Development",
+    issuer: "IBM",
+    category: "AI & Machine Learning",
+    logo: "/logos/ibm.svg",
+    url: "https://www.coursera.org/account/accomplishments/verify/1SMIKTNA3V2U",
+  },
+  {
+    title: "Introduction to Cloud Computing",
+    issuer: "IBM",
+    category: "Cloud & DevOps",
+    logo: "/logos/ibm.svg",
+    url: "https://www.coursera.org/account/accomplishments/verify/X850H4Q0RM1L",
+  },
+  {
+    title: "Introduction to DevOps",
+    issuer: "IBM",
+    category: "Cloud & DevOps",
+    logo: "/logos/ibm.svg",
+    url: "https://www.coursera.org/account/accomplishments/verify/5FK0DTRMVB7U",
+  },
+  {
+    title: "HTML and CSS in depth",
+    issuer: "Meta",
+    category: "Web Development",
+    logo: "/logos/meta.svg",
+    url: "https://www.coursera.org/account/accomplishments/verify/S6V22E5T9NAN",
+  },
+  {
+    title: "Version Control",
+    issuer: "Meta",
+    category: "Web Development",
+    logo: "/logos/meta.svg",
+    url: "https://www.coursera.org/account/accomplishments/verify/X2QMVEBZ5W7U",
+  },
+];
+
+const certificationCategories = [
+  "AI & Machine Learning",
+  "Web Development",
+  "Cloud & DevOps",
+  "Software Engineering",
 ];
 
 const documentResources = [
@@ -453,17 +502,41 @@ export default function Home() {
               {pathname === "/" && <a className="section-see-all" href="/certifications">See all ↗</a>}
             </div>
             <p className="section-intro">Verified credentials across software engineering, web development, machine learning, and generative AI.</p>
-            <div className="certification-wall">
-              {(pathname === "/" ? homepageCertifications : certifications).map((certificate, index) => (
-                <a className="certification-card" href={certificate.url} key={certificate.url} target="_blank" rel="noreferrer" aria-label={`Verify ${certificate.title} certificate`} style={{ "--card-rotation": `${[-2, 1.5, -1, 2, -1.5, 1, -2][index]}deg` } as CSSProperties}>
-                  <span className="certification-card-frame" aria-hidden="true" />
-                  <img src={certificate.logo} alt={`${certificate.issuer} logo`} />
-                  <p className="certification-title">{certificate.title}</p>
-                  <p className="certification-issuer">{certificate.issuer}</p>
-                  <span className="certification-verify">‹ Verify ›</span>
-                </a>
-              ))}
-            </div>
+            {pathname === "/" ? (
+              <div className="certification-wall">
+                {homepageCertifications.map((certificate, index) => (
+                  <a className="certification-card" href={certificate.url} key={certificate.url} target="_blank" rel="noreferrer" aria-label={`Verify ${certificate.title} certificate`} style={{ "--card-rotation": `${[-2, 1.5, -1][index]}deg` } as CSSProperties}>
+                    <span className="certification-card-frame" aria-hidden="true" />
+                    <img src={certificate.logo} alt={`${certificate.issuer} logo`} />
+                    <p className="certification-title">{certificate.title}</p>
+                    <p className="certification-issuer">{certificate.issuer}</p>
+                    <span className="certification-verify">‹ Verify ›</span>
+                  </a>
+                ))}
+              </div>
+            ) : (
+              <div className="certification-groups">
+                {certificationCategories.map((category) => (
+                  <section className="certification-group" key={category} aria-labelledby={`certification-${category.toLowerCase().replaceAll(" ", "-").replaceAll("&", "and")}`}>
+                    <div className="certification-group-heading">
+                      <h2 id={`certification-${category.toLowerCase().replaceAll(" ", "-").replaceAll("&", "and")}`}>{category}</h2>
+                      <span>{certifications.filter((certificate) => certificate.category === category).length} credentials</span>
+                    </div>
+                    <div className="certification-wall">
+                      {certifications.filter((certificate) => certificate.category === category).map((certificate, index) => (
+                        <a className="certification-card" href={certificate.url} key={certificate.url} target="_blank" rel="noreferrer" aria-label={`Verify ${certificate.title} certificate`} style={{ "--card-rotation": `${[-2, 1.5, -1, 2][index]}deg` } as CSSProperties}>
+                          <span className="certification-card-frame" aria-hidden="true" />
+                          <img src={certificate.logo} alt={`${certificate.issuer} logo`} />
+                          <p className="certification-title">{certificate.title}</p>
+                          <p className="certification-issuer">{certificate.issuer}</p>
+                          <span className="certification-verify">‹ Verify ›</span>
+                        </a>
+                      ))}
+                    </div>
+                  </section>
+                ))}
+              </div>
+            )}
           </div>
         </section>}
 

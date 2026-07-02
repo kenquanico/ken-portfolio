@@ -200,6 +200,11 @@ button { color: inherit; font: inherit; }
 .main-home .experience-rail { padding: 28px 26px 0; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); }
 
 .certification-wall { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 14px; }
+.certification-groups { display: grid; gap: 48px; margin-top: 30px; }
+.certification-group-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.certification-group-heading h2 { margin: 0; font-size: 15px; font-weight: 500; }
+.certification-group-heading span { color: var(--muted); font-family: ui-monospace, monospace; font-size: 8px; letter-spacing: .09em; text-transform: uppercase; }
+.main-detail .certification-group .certification-wall { padding-top: 20px; padding-bottom: 0; }
 .certification-card { --card-rotation: 0deg; position: relative; display: flex; min-height: 210px; flex-direction: column; align-items: center; justify-content: center; padding: 28px 16px 20px; border-radius: 14px; background: linear-gradient(180deg, var(--surface), color-mix(in srgb, var(--surface) 72%, var(--bg))); text-align: center; transform: rotate(var(--card-rotation)); transition: transform 180ms ease, box-shadow 180ms ease; }
 .main-detail .certification-wall { display: flex; flex-wrap: wrap; gap: 24px 0; padding: 24px 18px 36px; }
 .main-detail .certification-card { width: calc((100% + 54px) / 4); min-height: 174px; flex: 0 0 calc((100% + 54px) / 4); margin-left: -18px; padding: 20px 16px 16px; box-shadow: 0 20px 36px -22px rgba(0,0,0,.5); }
