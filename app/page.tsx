@@ -207,18 +207,18 @@ const sampleProjects = [
     url: "https://uifry-one-tan.vercel.app/",
   },
   {
-    name: "Shop.co",
+    name: "DRAPÉ",
     category: "E-commerce Website",
-    logo: "/project-logos/shopco-actual.svg",
+    logo: "/project-logos/drape.svg",
     description:
-      "E-commerce storefront sample with product-led layout, mobile shopping patterns, accessible navigation, and a conversion-aware browsing experience.",
-    url: "https://shopco-kappa-three.vercel.app/",
+      "Rebranded fashion storefront with product-led discovery, responsive shopping flows, accessible navigation, and a polished conversion-focused experience.",
+    url: "https://drape-shop.vercel.app/product/8",
   },
 ];
 
-const featuredProject = sampleProjects.find((project) => project.name === "Shop.co")!;
+const featuredProject = sampleProjects.find((project) => project.name === "DRAPÉ")!;
 const remainingProjects = sampleProjects.filter((project) => project.name !== featuredProject.name);
-const homepageProjects = ["Uifry", "Shop.co", "Vaultflow"].map(
+const homepageProjects = ["DRAPÉ", "Uifry", "Vaultflow"].map(
   (name) => sampleProjects.find((project) => project.name === name)!,
 );
 const homepageCertifications = [
@@ -230,7 +230,7 @@ const githubMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "S
 
 function projectLogoClass(name: string) {
   if (name === "FutureSphere") return " project-logo-light-source";
-  if (name === "Shop.co") return " project-logo-dark-source";
+  if (name === "DRAPÉ") return " project-logo-dark-source";
   return "";
 }
 
