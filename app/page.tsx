@@ -218,7 +218,7 @@ const sampleProjects = [
   {
     name: "Petal Booth",
     category: "Interactive Web App",
-    logo: "/project-logos/petal-booth.svg",
+    logo: "/project-logos/petal-booth.png",
     description:
       "Private in-browser photobooth with a playful camera experience, responsive controls, and a polished flow for capturing memorable moments.",
     url: "https://photobooth-kq.vercel.app/",
