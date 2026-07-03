@@ -202,10 +202,11 @@ const sampleProjects = [
   {
     name: "AgriVision",
     category: "AI Capstone Project",
-    logo: "/project-logos/agrivision.svg",
+    logo: "/project-logos/agrivision.png",
     description:
       "Web-based computer-vision ecosystem using an optimized YOLOv8m model to detect 16 rice health conditions and turn GPS-linked field reports into regional outbreak intelligence.",
-    url: "/docs/itmawd-12b-quanico-final-manuscript.pdf",
+    url: "https://agrivision-cs.vercel.app/",
+    manuscriptUrl: "/docs/itmawd-12b-quanico-final-manuscript.pdf",
   },
   {
     name: "DRAPÉ",
@@ -472,7 +473,7 @@ export default function Home() {
                   <p className="project-description">{featuredProject.description}</p>
                 </div>
               </div>
-              <div className="spotlight-footer"><span>YOLOv8m</span><span>Computer Vision</span><span>Geospatial Data</span><a href={featuredProject.url} target="_blank" rel="noreferrer">Read manuscript ↗</a></div>
+              <div className="spotlight-footer"><span>YOLOv8m</span><span>Computer Vision</span><span>Geospatial Data</span><div className="spotlight-links"><a href={featuredProject.url} target="_blank" rel="noreferrer">View live demo ↗</a><a href={featuredProject.manuscriptUrl} target="_blank" rel="noreferrer">Read manuscript ↗</a></div></div>
             </article>
             <div className="project-list" aria-label="Selected engineering projects">
               {remainingProjects.map((project) => (
