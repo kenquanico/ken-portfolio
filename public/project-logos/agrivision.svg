@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">AgriVision</title>
+  <rect width="64" height="64" rx="16" fill="#173d2b"/>
+  <path d="M17 37c8-1 13-6 16-18 8 5 12 13 10 21-2 8-9 12-16 10-7-2-11-7-10-13Z" fill="#8fd19e"/>
+  <path d="M22 44c5-7 10-12 18-17" fill="none" stroke="#f4f0df" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="44" cy="20" r="6" fill="#e8b94f"/>
+  <path d="M44 16v8M40 20h8" stroke="#173d2b" stroke-width="2" stroke-linecap="round"/>
+</svg>

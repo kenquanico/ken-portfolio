@@ -200,6 +200,14 @@ const documentResources = [
 
 const sampleProjects = [
   {
+    name: "AgriVision",
+    category: "AI Capstone Project",
+    logo: "/project-logos/agrivision.svg",
+    description:
+      "Web-based computer-vision ecosystem using an optimized YOLOv8m model to detect 16 rice health conditions and turn GPS-linked field reports into regional outbreak intelligence.",
+    url: "/docs/itmawd-12b-quanico-final-manuscript.pdf",
+  },
+  {
     name: "DRAPÉ",
     category: "E-commerce Website",
     logo: "/project-logos/drape.svg",
@@ -273,9 +281,9 @@ const sampleProjects = [
   },
 ];
 
-const featuredProject = sampleProjects.find((project) => project.name === "DRAPÉ")!;
+const featuredProject = sampleProjects.find((project) => project.name === "AgriVision")!;
 const remainingProjects = sampleProjects.filter((project) => project.name !== featuredProject.name);
-const homepageProjects = ["DRAPÉ", "Uifry", "Petal Booth"].map(
+const homepageProjects = ["AgriVision", "DRAPÉ", "Uifry"].map(
   (name) => sampleProjects.find((project) => project.name === name)!,
 );
 const homepageCertifications = [
@@ -464,7 +472,7 @@ export default function Home() {
                   <p className="project-description">{featuredProject.description}</p>
                 </div>
               </div>
-              <div className="spotlight-footer"><span>Responsive UI</span><span>Performance</span><span>Product Delivery</span><a href={featuredProject.url} target="_blank" rel="noreferrer">View project ↗</a></div>
+              <div className="spotlight-footer"><span>YOLOv8m</span><span>Computer Vision</span><span>Geospatial Data</span><a href={featuredProject.url} target="_blank" rel="noreferrer">Read manuscript ↗</a></div>
             </article>
             <div className="project-list" aria-label="Selected engineering projects">
               {remainingProjects.map((project) => (
