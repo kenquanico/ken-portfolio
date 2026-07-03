@@ -405,7 +405,7 @@ export default function Home() {
           <div className="hero-content">
             <p className="eyebrow">Web Developer</p>
             <p className="hero-name">Ken Aldrey Quanico</p>
-            <p className="hero-statement">I’m a Web Developer. I build modern web applications, and these days I’m focused on generative AI.</p>
+            <p className="hero-statement">I’m a Web Developer. I build modern web applications, and these days I’m focused on AI Software Engineering.</p>
             <p className="hero-intro">
               Right now I’m building new products every day. I enjoy turning rough ideas
               into reliable experiences people can actually use.
