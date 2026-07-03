@@ -200,6 +200,30 @@ const documentResources = [
 
 const sampleProjects = [
   {
+    name: "DRAPÉ",
+    category: "E-commerce Website",
+    logo: "/project-logos/drape.svg",
+    description:
+      "Rebranded fashion storefront with product-led discovery, responsive shopping flows, accessible navigation, and a polished conversion-focused experience.",
+    url: "https://drape-shop.vercel.app/product/8",
+  },
+  {
+    name: "Uifry",
+    category: "Finance App Website",
+    logo: "/project-logos/uifry.svg",
+    description:
+      "Finance app landing page emphasizing clean UI systems, SEO-ready page structure, responsive pricing/content sections, and credible product presentation.",
+    url: "https://uifry-one-tan.vercel.app/",
+  },
+  {
+    name: "Petal Booth",
+    category: "Interactive Web App",
+    logo: "/project-logos/petal-booth.svg",
+    description:
+      "Private in-browser photobooth with a playful camera experience, responsive controls, and a polished flow for capturing memorable moments.",
+    url: "https://photobooth-kq.vercel.app/",
+  },
+  {
     name: "Pathway Dark",
     category: "Landing Page",
     logo: "/project-logos/pathway-dark.svg",
@@ -247,27 +271,11 @@ const sampleProjects = [
       "Restaurant and discovery UI with appetite-driven visuals, intuitive navigation, mobile-first layout, and strong user flow from browse to action.",
     url: "https://tastenet-nine.vercel.app/",
   },
-  {
-    name: "Uifry",
-    category: "Finance App Website",
-    logo: "/project-logos/uifry.svg",
-    description:
-      "Finance app landing page emphasizing clean UI systems, SEO-ready page structure, responsive pricing/content sections, and credible product presentation.",
-    url: "https://uifry-one-tan.vercel.app/",
-  },
-  {
-    name: "DRAPÉ",
-    category: "E-commerce Website",
-    logo: "/project-logos/drape.svg",
-    description:
-      "Rebranded fashion storefront with product-led discovery, responsive shopping flows, accessible navigation, and a polished conversion-focused experience.",
-    url: "https://drape-shop.vercel.app/product/8",
-  },
 ];
 
 const featuredProject = sampleProjects.find((project) => project.name === "DRAPÉ")!;
 const remainingProjects = sampleProjects.filter((project) => project.name !== featuredProject.name);
-const homepageProjects = ["DRAPÉ", "Uifry", "Vaultflow"].map(
+const homepageProjects = ["DRAPÉ", "Uifry", "Petal Booth"].map(
   (name) => sampleProjects.find((project) => project.name === name)!,
 );
 const homepageCertifications = [
