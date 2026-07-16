@@ -159,6 +159,8 @@ button { color: inherit; font: inherit; }
 .project-badges .project-rank { border-color: var(--text); background: var(--text); color: var(--bg); }
 .project-title { margin: 14px 0 0; font-size: 17px; }
 .project-description { max-width: 590px; margin: 8px 0 0; color: var(--muted); font-size: 13px; line-height: 1.65; }
+.project-contribution { max-width: 680px; margin: 12px 0 0; color: var(--text); font-size: 12px; line-height: 1.65; }
+.project-contribution strong { display: block; margin-bottom: 3px; color: var(--accent); font-family: var(--font-mono), monospace; font-size: 9px; font-weight: 700; letter-spacing: .11em; text-transform: uppercase; }
 .spotlight-footer { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--line); }
 .spotlight-links { display: flex; align-items: center; gap: 16px; margin-left: auto; }
 .spotlight-footer a { font-family: ui-monospace, monospace; font-size: 10px; text-transform: uppercase; }
@@ -168,6 +170,7 @@ button { color: inherit; font: inherit; }
 .project-card-row:hover { background: color-mix(in srgb, var(--surface) 65%, var(--bg)); }
 .project-identity { display: flex; min-height: 52px; align-items: center; gap: 12px; font-size: 14px; }
 .project-card-row p { margin: 5px 0 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
+.project-card-row .project-contribution { margin-top: 10px; color: var(--text); }
 .project-type { color: var(--muted); font-family: ui-monospace, monospace; font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
 .project-arrow { color: var(--muted); transition: transform 160ms ease, color 160ms ease; }
 .project-card-row:hover .project-arrow { color: var(--text); transform: translate(2px, -2px); }
@@ -182,6 +185,7 @@ button { color: inherit; font: inherit; }
 .deck-card-3:hover { transform: translateX(-18%) rotate(2deg) translateY(10px); }
 .deck-project-name { display: flex; align-items: center; gap: 12px; margin-top: 22px; font-size: 14px; }
 .deck-card > p { margin: 16px 0 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
+.deck-card > .project-contribution { margin-top: 12px; color: var(--text); }
 .deck-action { margin-top: auto; padding-top: 20px; color: var(--muted); font-family: ui-monospace, monospace; font-size: 9px; text-transform: uppercase; }
 
 .experience-rail { margin-top: 10px; }
