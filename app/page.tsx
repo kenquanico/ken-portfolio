@@ -228,15 +228,6 @@ const documentResources = [
 // `category` stays as the more specific project type shown underneath it.
 const sampleProjects = [
   {
-    name: "AgriVision",
-    label: "AI / Deep Learning",
-    category: "Computer Vision Capstone",
-    logo: "/project-logos/agrivision.png",
-    description:
-        "Web-based computer-vision ecosystem using an optimized YOLOv8m model to detect 16 rice health conditions and turn GPS-linked field reports into regional outbreak intelligence.",
-    url: "https://agrivision-cs.vercel.app/",
-  },
-  {
     name: "Elio",
     label: "AI / Deep Learning",
     category: "Offline-First Health Companion App",
@@ -244,6 +235,15 @@ const sampleProjects = [
     description:
         "Offline-first React Native health app that centralizes medications, health records, and insurance coverage, powered by ElioAI, an on-device AI assistant that helps users manage everyday health tasks.",
     url: "https://www.eliocare.tech",
+  },
+  {
+    name: "AgriVision",
+    label: "AI / Deep Learning",
+    category: "Computer Vision Capstone",
+    logo: "/project-logos/agrivision.png",
+    description:
+        "Web-based computer-vision ecosystem using an optimized YOLOv8m model to detect 16 rice health conditions and turn GPS-linked field reports into regional outbreak intelligence.",
+    url: "https://agrivision-cs.vercel.app/",
   },
   {
     name: "DRAPÉ",
@@ -329,7 +329,7 @@ const sampleProjects = [
 ];
 
 const projectLabels = ["AI / Deep Learning", "Web Development"];
-const homepageProjects = ["AgriVision", "DRAPÉ", "Uifry"].map(
+const homepageProjects = ["Elio", "AgriVision", "DRAPÉ"].map(
     (name) => sampleProjects.find((project) => project.name === name)!,
 );
 const homepageCertifications = [
