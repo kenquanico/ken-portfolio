@@ -701,7 +701,7 @@ export default function Home() {
                           </div>
                           <div className="certification-wall">
                             {certifications.filter((certificate) => certificate.category === category).map((certificate, index) => (
-                                <a className="certification-card" href={certificate.url} key={certificate.url} target="_blank" rel="noreferrer" aria-label={`Verify ${certificate.title} certificate`} style={{ "--card-rotation": `${[-2, 1.5, -1, 2][index]}deg` } as CSSProperties}>
+                                <a className="certification-card" href={certificate.url} key={certificate.url} target="_blank" rel="noreferrer" aria-label={`Verify ${certificate.title} certificate`} style={{ "--card-rotation": `${[-2, 1.5, -1, 2][index % 4]}deg` } as CSSProperties}>
                                   <span className="certification-card-frame" aria-hidden="true" />
                                   <img src={certificate.logo} alt={`${certificate.issuer} logo`} />
                                   <p className="certification-title">{certificate.title}</p>
