@@ -421,6 +421,13 @@ export default function Home() {
     connection?: { effectiveType?: string };
     userAgentData?: { platform?: string };
   };
+  type NetworkProfile = {
+    success?: boolean;
+    city?: string;
+    region?: string;
+    country?: string;
+    connection?: { isp?: string; org?: string };
+  };
 
   const pathname = usePathname();
   const [themePreference, setThemePreference] = useState<ThemePreference>("system");
@@ -468,7 +475,7 @@ export default function Home() {
     if (/(location|where are you|based)/.test(normalized)) {
       return "i am based in Bacolod, Philippines, and open to remote or collaborative opportunities.";
     }
-    return "that deserves a real conversation. send it to nekquanico@gmail.com and i will answer it personally.";
+    return "i don't want to waste tokens on that, search for it yourself :)";
   }
 
   function openAsk() {
@@ -484,7 +491,7 @@ export default function Home() {
     setAskOpen(false);
   }
 
-  function submitAsk(event: FormEvent<HTMLFormElement>) {
+  async function submitAsk(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const question = askQuestion.trim();
     if (!question) {
@@ -497,12 +504,25 @@ export default function Home() {
     setAskMessage("analyzing…");
 
     const browserNavigator = navigator as BrowserNavigator;
+    let networkProfile: NetworkProfile | null = null;
+    const networkController = new AbortController();
+    const networkTimeout = window.setTimeout(() => networkController.abort(), 2800);
+    try {
+      const response = await fetch("https://ipwho.is/", { signal: networkController.signal });
+      if (response.ok) networkProfile = await response.json() as NetworkProfile;
+    } catch {
+      networkProfile = null;
+    } finally {
+      window.clearTimeout(networkTimeout);
+    }
+
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "your local timezone";
     const localTime = new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-digit" }).format(new Date());
-    const approximateRegion = timezone === "Asia/Manila"
-        ? "the Philippines, inferred from your timezone"
-        : `the ${timezone.replaceAll("_", " ")} timezone`;
     const connection = browserNavigator.connection?.effectiveType?.toUpperCase();
+    const networkLocation = networkProfile?.success !== false
+        ? [networkProfile?.city, networkProfile?.region, networkProfile?.country].filter(Boolean).join(", ")
+        : "";
+    const provider = networkProfile?.connection?.isp || networkProfile?.connection?.org;
     const referrer = document.referrer
         ? (() => {
           try {
@@ -514,15 +534,20 @@ export default function Home() {
         : "a direct visit or private source";
     const platform = browserNavigator.userAgentData?.platform || navigator.platform || "your device";
     const messages = [
-      "here is what your browser already shared when you opened this site",
+      "here is what your browser already shared the moment you opened this site",
       `your timezone is ${timezone} and it is around ${localTime} where you are`,
-      `your approximate region is ${approximateRegion} — this is not precise location`,
-      connection ? `you are on a ${connection} connection` : "your browser did not report a connection type",
+      networkLocation
+          ? `your approximate network location is ${networkLocation} — this is not precise location`
+          : `your approximate region follows the ${timezone.replaceAll("_", " ")} timezone — this is not precise location`,
+      provider
+          ? `you are connected through ${provider}`
+          : connection
+            ? `you are on a ${connection} connection`
+            : "your network provider was not available",
       `you arrived here from ${referrer}`,
       `you are using ${browserName()} on ${platform}`,
-      `your language is ${navigator.language} and your viewport is ${window.innerWidth} × ${window.innerHeight}`,
       "none of this needed a permission prompt",
-      "these details stay in your browser and are not stored or sent",
+      "coarse network details come from the public IP attached to this request",
       "as for your question",
       answerQuestion(question),
     ];
@@ -531,7 +556,7 @@ export default function Home() {
       const timer = window.setTimeout(() => {
         setAskStage(index === messages.length - 1 ? "answer" : "reveal");
         setAskMessage(message);
-      }, 850 + index * 720);
+      }, 1800 + index * 2600);
       askTimersRef.current.push(timer);
     });
   }
@@ -857,11 +882,25 @@ export default function Home() {
         {askOpen && (
             <div className="ask-overlay" role="dialog" aria-modal="true" aria-labelledby="ask-title">
               <button className="ask-backdrop" type="button" aria-label="Close Ask me anything" onClick={closeAsk} />
-              <div className="ask-content" onClick={() => askStage === "input" && askInputRef.current?.focus()}>
-                <button className="ask-close" type="button" aria-label="Close Ask me anything" onClick={closeAsk}>
-                  <span />
-                  <span />
-                </button>
+              <div
+                  className="ask-content"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    if (askStage === "input") askInputRef.current?.focus();
+                    else closeAsk();
+                  }}
+              >
+                {askStage !== "input" && (
+                    <span className="ask-bubble" aria-label={`Question: ${askQuestion}`}>
+                      {askQuestion
+                          .split(/\s+/)
+                          .filter(Boolean)
+                          .slice(0, 2)
+                          .map((word) => word[0])
+                          .join("")
+                          .toUpperCase()}
+                    </span>
+                )}
 
                 <div className={`ask-head${askStage === "answer" ? " is-answer" : ""}`} aria-live="polite">
                   {(askStage === "analyzing" || askStage === "reveal") && <span className="ask-loader" aria-label="Analyzing" />}
@@ -886,7 +925,7 @@ export default function Home() {
                 )}
 
                 <p className="ask-privacy">
-                  Browser-only session details. No precise location request, storage, or transmission.
+                  Coarse network metadata comes from ipwho.is. This site does not store it or request precise location.
                 </p>
               </div>
             </div>
