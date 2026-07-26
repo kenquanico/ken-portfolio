@@ -439,7 +439,7 @@ export default function Home() {
     }> = {
       tick: {
         duration: .045,
-        volume: .014,
+        volume: .03,
         voices: [
           { from: 1080, to: 1480, type: "sine" },
           { from: 620, to: 920, type: "triangle" },
@@ -447,7 +447,7 @@ export default function Home() {
       },
       press: {
         duration: .075,
-        volume: .02,
+        volume: .045,
         voices: [
           { from: 280, to: 180, type: "triangle" },
           { from: 760, to: 480, type: "sine" },
@@ -455,7 +455,7 @@ export default function Home() {
       },
       release: {
         duration: .085,
-        volume: .016,
+        volume: .036,
         voices: [
           { from: 430, to: 720, type: "sine" },
           { from: 860, to: 1180, type: "triangle" },
@@ -464,7 +464,9 @@ export default function Home() {
     };
 
     function getAudioContext() {
-      if (audioContextRef.current?.state !== "closed") return audioContextRef.current;
+      if (audioContextRef.current && audioContextRef.current.state !== "closed") {
+        return audioContextRef.current;
+      }
 
       const AudioContextClass = window.AudioContext ?? (window as AudioWindow).webkitAudioContext;
       if (!AudioContextClass) return null;
