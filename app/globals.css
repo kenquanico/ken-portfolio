@@ -135,16 +135,6 @@ img { max-width: 100%; }
 .wordmark-copy { display: flex; flex-direction: column; gap: 1px; font-family: var(--font-display); }
 .wordmark-name { font-size: 13px; letter-spacing: -.03em; }
 .wordmark-kicker { color: var(--muted); font-size: 8px; letter-spacing: .08em; text-transform: uppercase; }
-.wordmark-mark {
-  display: block;
-  width: 28px;
-  height: 28px;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: 50%;
-  background: var(--surface);
-}
-.wordmark-mark img { display: block; width: 100%; height: 100%; object-fit: cover; }
 
 .site-nav {
   display: flex;
@@ -185,7 +175,6 @@ img { max-width: 100%; }
   gap: 8px;
 }
 .ask-toggle,
-.theme-toggle,
 .sound-toggle,
 .nav-email {
   display: inline-flex;
@@ -205,7 +194,36 @@ img { max-width: 100%; }
   transition: border-color 150ms ease, color 150ms ease, background-color 150ms ease;
 }
 .ask-toggle { min-width: 112px; }
-.theme-toggle { min-width: 92px; }
+.theme-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  padding: 2px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+}
+.theme-option {
+  display: inline-grid;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 160ms ease, background-color 220ms cubic-bezier(.16, 1, .3, 1), transform 220ms cubic-bezier(.16, 1, .3, 1);
+}
+.theme-option:hover,
+.theme-option:focus-visible { color: var(--text); }
+.theme-option.is-active {
+  background: var(--text);
+  color: var(--bg);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--text) 18%, transparent);
+  transform: scale(1.04);
+}
 .sound-toggle {
   width: 30px;
   height: 30px;
@@ -214,11 +232,9 @@ img { max-width: 100%; }
   border-radius: 50%;
 }
 .ask-toggle:hover,
-.theme-toggle:hover,
 .sound-toggle:hover,
 .nav-email:hover,
 .ask-toggle:focus-visible,
-.theme-toggle:focus-visible,
 .sound-toggle:focus-visible,
 .nav-email:focus-visible {
   border-color: var(--text);
@@ -488,18 +504,6 @@ main::before {
   transition: transform 350ms cubic-bezier(.22, 1, .36, 1);
 }
 .hero-portrait:hover .portrait-photo { transform: scale(1.015); }
-.portrait-caption {
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
-  z-index: 1;
-  padding: 3px 6px;
-  background: #0a0a0a;
-  color: #fff;
-  font-family: var(--font-display);
-  font-size: 8px;
-  letter-spacing: .1em;
-}
 .hero-content { padding-top: 8px; }
 .eyebrow {
   margin: 0 0 16px;
@@ -1196,12 +1200,10 @@ main::before {
     margin: 0 0 0 auto;
   }
   .ask-toggle,
-  .theme-toggle,
   .sound-toggle,
   .nav-email { width: 32px; padding: 0; }
   .sound-toggle { width: 30px; height: 30px; min-height: 30px; border-radius: 50%; }
   .ask-toggle span,
-  .theme-toggle span:last-child,
   .sound-toggle span,
   .nav-email span { display: none; }
   .menu-toggle {
@@ -1230,6 +1232,9 @@ main::before {
 
 @media (max-width: 680px) {
   :root { --page-pad: 24px; }
+  .sidebar-footer { gap: 5px; }
+  .theme-option { width: 26px; height: 26px; }
+  .nav-email { display: none; }
   .ask-content {
     justify-content: flex-start;
     gap: 24px;

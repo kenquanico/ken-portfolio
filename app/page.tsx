@@ -423,7 +423,6 @@ export default function Home() {
   };
 
   const pathname = usePathname();
-  const [theme, setTheme] = useState<"light" | "dark">("light");
   const [themePreference, setThemePreference] = useState<ThemePreference>("system");
   const [menuOpen, setMenuOpen] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
@@ -547,7 +546,6 @@ export default function Home() {
     const media = window.matchMedia("(prefers-color-scheme: dark)");
     const applySystemTheme = () => {
       const resolvedTheme = themePreference === "system" ? (media.matches ? "dark" : "light") : themePreference;
-      setTheme(resolvedTheme);
       document.documentElement.dataset.theme = resolvedTheme;
       document.documentElement.dataset.themeMode = themePreference;
     };
@@ -749,7 +747,6 @@ export default function Home() {
 
     const commitTheme = () => {
       setThemePreference(nextPreference);
-      setTheme(nextTheme);
       root.dataset.theme = nextTheme;
       root.dataset.themeMode = nextPreference;
       window.localStorage.setItem("ken-portfolio-theme", nextPreference);
@@ -785,9 +782,6 @@ export default function Home() {
 
         <header className="site-header">
           <a className="wordmark" href="/" aria-label="Ken Aldrey Quanico, home">
-            <span className="wordmark-mark" aria-hidden="true">
-              <img src="/images/profile-icon.png" alt="" />
-            </span>
             <span className="wordmark-copy">
               <span className="wordmark-name">Ken Quanico</span>
               <span className="wordmark-kicker">Software Developer</span>
@@ -906,7 +900,6 @@ export default function Home() {
                   src="/images/ken-portrait.png"
                   alt="Portrait of Ken Aldrey Quanico"
               />
-              <span className="portrait-caption">Bacolod / PH</span>
             </div>
 
             <div className="hero-content">
