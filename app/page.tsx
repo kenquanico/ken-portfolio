@@ -378,6 +378,24 @@ function projectLogoClass(name: string) {
   return "";
 }
 
+const certificationCardPoses = [
+  { rotation: -4, translateY: 6 },
+  { rotation: 3, translateY: -4 },
+  { rotation: -2, translateY: 3 },
+  { rotation: 4, translateY: -6 },
+  { rotation: -3, translateY: 4 },
+  { rotation: 2.5, translateY: -2 },
+  { rotation: -3.5, translateY: 5 },
+];
+
+function certificationCardStyle(index: number) {
+  const pose = certificationCardPoses[index % certificationCardPoses.length];
+  return {
+    "--rot": `${pose.rotation}deg`,
+    "--ty": `${pose.translateY}px`,
+  } as CSSProperties;
+}
+
 function SectionLabel({ number, title }: { number: string; title: string }) {
   return (
       <div className="section-label">
@@ -410,27 +428,99 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    function playClick(event: PointerEvent) {
-      if (!soundEnabled || !(event.target instanceof Element) || !event.target.closest("a, button")) return;
+    type SoundCue = "tick" | "press" | "release";
 
+    const soundProfiles: Record<SoundCue, {
+      duration: number;
+      volume: number;
+      voices: Array<{ from: number; to: number; type: OscillatorType }>;
+    }> = {
+      tick: {
+        duration: .045,
+        volume: .014,
+        voices: [
+          { from: 1080, to: 1480, type: "sine" },
+          { from: 620, to: 920, type: "triangle" },
+        ],
+      },
+      press: {
+        duration: .075,
+        volume: .02,
+        voices: [
+          { from: 280, to: 180, type: "triangle" },
+          { from: 760, to: 480, type: "sine" },
+        ],
+      },
+      release: {
+        duration: .085,
+        volume: .016,
+        voices: [
+          { from: 430, to: 720, type: "sine" },
+          { from: 860, to: 1180, type: "triangle" },
+        ],
+      },
+    };
+
+    function playSound(cue: SoundCue) {
+      const profile = soundProfiles[cue];
       const audio = new AudioContext();
-      const oscillator = audio.createOscillator();
-      const gain = audio.createGain();
+      const master = audio.createGain();
+      const filter = audio.createBiquadFilter();
+      const now = audio.currentTime;
 
-      oscillator.type = "sine";
-      oscillator.frequency.setValueAtTime(520, audio.currentTime);
-      oscillator.frequency.exponentialRampToValueAtTime(330, audio.currentTime + 0.045);
-      gain.gain.setValueAtTime(0.028, audio.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + 0.055);
-      oscillator.connect(gain);
-      gain.connect(audio.destination);
-      oscillator.start();
-      oscillator.stop(audio.currentTime + 0.055);
-      oscillator.addEventListener("ended", () => void audio.close(), { once: true });
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(cue === "press" ? 1800 : 2600, now);
+      master.gain.setValueAtTime(.0001, now);
+      master.gain.exponentialRampToValueAtTime(profile.volume, now + .006);
+      master.gain.exponentialRampToValueAtTime(.0001, now + profile.duration);
+      filter.connect(master);
+      master.connect(audio.destination);
+
+      profile.voices.forEach((voice, index) => {
+        const oscillator = audio.createOscillator();
+        oscillator.type = voice.type;
+        oscillator.detune.setValueAtTime(index === 0 ? -4 : 7, now);
+        oscillator.frequency.setValueAtTime(voice.from, now);
+        oscillator.frequency.exponentialRampToValueAtTime(voice.to, now + profile.duration);
+        oscillator.connect(filter);
+        oscillator.start(now + index * .002);
+        oscillator.stop(now + profile.duration);
+      });
+
+      window.setTimeout(() => void audio.close(), (profile.duration + .08) * 1000);
     }
 
-    document.addEventListener("pointerdown", playClick);
-    return () => document.removeEventListener("pointerdown", playClick);
+    function interactiveTarget(event: PointerEvent) {
+      if (!(event.target instanceof Element)) return null;
+      const target = event.target.closest<HTMLElement>("a, button");
+      return target?.hasAttribute("data-cuelume-silent") ? null : target;
+    }
+
+    function playHover(event: PointerEvent) {
+      if (!soundEnabled || !(event.target instanceof Element)) return;
+      const target = event.target.closest<HTMLElement>("[data-cuelume-hover='tick']");
+      if (!target || (event.relatedTarget instanceof Node && target.contains(event.relatedTarget))) return;
+      playSound("tick");
+    }
+
+    function playPress(event: PointerEvent) {
+      if (!soundEnabled || !interactiveTarget(event)) return;
+      playSound("press");
+    }
+
+    function playRelease(event: PointerEvent) {
+      if (!soundEnabled || !interactiveTarget(event)) return;
+      playSound("release");
+    }
+
+    document.addEventListener("pointerover", playHover);
+    document.addEventListener("pointerdown", playPress);
+    document.addEventListener("pointerup", playRelease);
+    return () => {
+      document.removeEventListener("pointerover", playHover);
+      document.removeEventListener("pointerdown", playPress);
+      document.removeEventListener("pointerup", playRelease);
+    };
   }, [soundEnabled]);
 
   useEffect(() => {
@@ -693,7 +783,7 @@ export default function Home() {
               {pathname === "/" ? (
                   <div className="certification-wall">
                     {homepageCertifications.map((certificate, index) => (
-                        <a className="certification-card" href={certificate.url} key={certificate.url} target="_blank" rel="noreferrer" aria-label={`Verify ${certificate.title} certificate`} style={{ "--card-rotation": `${[-2, 1.5, -1][index]}deg` } as CSSProperties}>
+                        <a className="certification-card" href={certificate.url} key={certificate.url} target="_blank" rel="noreferrer" aria-label={`Verify ${certificate.title} certificate`} style={certificationCardStyle(index)} data-cuelume-hover="tick" data-cuelume-press="press" data-cuelume-release="release">
                           <span className="certification-card-frame" aria-hidden="true" />
                           <img src={certificate.logo} alt={`${certificate.issuer} logo`} />
                           <p className="certification-title">{certificate.title}</p>
@@ -712,7 +802,7 @@ export default function Home() {
                           </div>
                           <div className="certification-wall">
                             {certifications.filter((certificate) => certificate.category === category).map((certificate, index) => (
-                                <a className="certification-card" href={certificate.url} key={certificate.url} target="_blank" rel="noreferrer" aria-label={`Verify ${certificate.title} certificate`} style={{ "--card-rotation": `${[-2, 1.5, -1, 2][index % 4]}deg` } as CSSProperties}>
+                                <a className="certification-card" href={certificate.url} key={certificate.url} target="_blank" rel="noreferrer" aria-label={`Verify ${certificate.title} certificate`} style={certificationCardStyle(index)} data-cuelume-hover="tick" data-cuelume-press="press" data-cuelume-release="release">
                                   <span className="certification-card-frame" aria-hidden="true" />
                                   <img src={certificate.logo} alt={`${certificate.issuer} logo`} />
                                   <p className="certification-title">{certificate.title}</p>
