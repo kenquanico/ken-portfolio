@@ -419,13 +419,17 @@ export default function Home() {
   type AskStage = "input" | "analyzing" | "reveal" | "answer";
   type BrowserNavigator = Navigator & {
     connection?: { effectiveType?: string };
+    deviceMemory?: number;
     userAgentData?: { platform?: string };
   };
   type NetworkProfile = {
     success?: boolean;
+    ip?: string;
     city?: string;
     region?: string;
     country?: string;
+    latitude?: number;
+    longitude?: number;
     connection?: { isp?: string; org?: string };
   };
 
@@ -456,6 +460,11 @@ export default function Home() {
     if (/Firefox\//.test(agent)) return "Firefox";
     if (/Safari\//.test(agent)) return "Safari";
     return "your browser";
+  }
+
+  function browserVersion() {
+    const match = navigator.userAgent.match(/(?:Edg|Chrome|Firefox|Version)\/(\d+)/);
+    return match?.[1] || "";
   }
 
   function answerQuestion(question: string) {
@@ -519,10 +528,15 @@ export default function Home() {
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "your local timezone";
     const localTime = new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-digit" }).format(new Date());
     const connection = browserNavigator.connection?.effectiveType?.toUpperCase();
-    const networkLocation = networkProfile?.success !== false
-        ? [networkProfile?.city, networkProfile?.region, networkProfile?.country].filter(Boolean).join(", ")
-        : "";
+    const networkLocationParts = networkProfile?.success !== false
+        ? [networkProfile?.city, networkProfile?.region, networkProfile?.country].filter(Boolean)
+        : [];
+    const networkLocation = networkLocationParts.join(", ");
     const provider = networkProfile?.connection?.isp || networkProfile?.connection?.org;
+    const publicIp = networkProfile?.ip;
+    const coordinates = typeof networkProfile?.latitude === "number" && typeof networkProfile?.longitude === "number"
+        ? `${networkProfile.latitude.toFixed(2)}, ${networkProfile.longitude.toFixed(2)}`
+        : "";
     const referrer = document.referrer
         ? (() => {
           try {
@@ -533,21 +547,29 @@ export default function Home() {
         })()
         : "a direct visit or private source";
     const platform = browserNavigator.userAgentData?.platform || navigator.platform || "your device";
+    const memory = browserNavigator.deviceMemory;
+    const processorCores = navigator.hardwareConcurrency;
+    const version = browserVersion();
     const messages = [
-      "here is what your browser already shared the moment you opened this site",
-      `your timezone is ${timezone} and it is around ${localTime} where you are`,
-      networkLocation
-          ? `your approximate network location is ${networkLocation} — this is not precise location`
-          : `your approximate region follows the ${timezone.replaceAll("_", " ")} timezone — this is not precise location`,
+      "before i answer",
+      publicIp ? `your public ip address is ${publicIp}` : "your public ip address was not available",
       provider
           ? `you are connected through ${provider}`
-          : connection
-            ? `you are on a ${connection} connection`
-            : "your network provider was not available",
+          : "your network provider was not available",
+      networkLocation
+          ? `your approximate network location is ${networkLocation} — city-level IP data can be imprecise`
+          : `your approximate region follows the ${timezone.replaceAll("_", " ")} timezone`,
+      coordinates
+          ? `your approximate network coordinates are around ${coordinates}`
+          : "approximate network coordinates were not available",
+      `you are on ${platform}${processorCores ? ` with ${processorCores} processor cores` : ""}${memory ? ` and ${memory}gb of reported memory` : ""}`,
+      `you are browsing with ${browserName()}${version ? ` ${version}` : ""} set to ${navigator.language}`,
+      `your timezone is ${timezone} and it is around ${localTime} where you are`,
+      connection ? `you are on a ${connection} connection` : "your browser did not report a connection type",
       `you arrived here from ${referrer}`,
-      `you are using ${browserName()} on ${platform}`,
       "none of this needed a permission prompt",
-      "coarse network details come from the public IP attached to this request",
+      "your browser shares this information with every website you open, automatically",
+      "so be mindful of what you click, and who you trust online",
       "as for your question",
       answerQuestion(question),
     ];
