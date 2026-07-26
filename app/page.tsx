@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 
 const experiences = [
@@ -410,6 +410,7 @@ export default function Home() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [menuOpen, setMenuOpen] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const audioContextRef = useRef<AudioContext | null>(null);
   const [githubActivity, setGithubActivity] = useState<Array<{ date: string; count: number; level: number } | null>>(
       Array.from({ length: 53 * 7 }, () => null),
   );
@@ -429,6 +430,7 @@ export default function Home() {
 
   useEffect(() => {
     type SoundCue = "tick" | "press" | "release";
+    type AudioWindow = Window & { webkitAudioContext?: typeof AudioContext };
 
     const soundProfiles: Record<SoundCue, {
       duration: number;
@@ -461,33 +463,65 @@ export default function Home() {
       },
     };
 
+    function getAudioContext() {
+      if (audioContextRef.current?.state !== "closed") return audioContextRef.current;
+
+      const AudioContextClass = window.AudioContext ?? (window as AudioWindow).webkitAudioContext;
+      if (!AudioContextClass) return null;
+
+      audioContextRef.current = new AudioContextClass();
+      return audioContextRef.current;
+    }
+
+    function unlockAudio() {
+      if (!soundEnabled) return;
+      const audio = getAudioContext();
+      if (!audio) return;
+
+      if (audio.state === "suspended") void audio.resume();
+
+      // A silent one-sample source unlocks Web Audio during the first iOS touch.
+      const source = audio.createBufferSource();
+      source.buffer = audio.createBuffer(1, 1, 22050);
+      source.connect(audio.destination);
+      source.start();
+    }
+
     function playSound(cue: SoundCue) {
       const profile = soundProfiles[cue];
-      const audio = new AudioContext();
-      const master = audio.createGain();
-      const filter = audio.createBiquadFilter();
-      const now = audio.currentTime;
+      const audio = getAudioContext();
+      if (!audio) return;
 
-      filter.type = "lowpass";
-      filter.frequency.setValueAtTime(cue === "press" ? 1800 : 2600, now);
-      master.gain.setValueAtTime(.0001, now);
-      master.gain.exponentialRampToValueAtTime(profile.volume, now + .006);
-      master.gain.exponentialRampToValueAtTime(.0001, now + profile.duration);
-      filter.connect(master);
-      master.connect(audio.destination);
+      const renderCue = () => {
+        const master = audio.createGain();
+        const filter = audio.createBiquadFilter();
+        const now = audio.currentTime;
 
-      profile.voices.forEach((voice, index) => {
-        const oscillator = audio.createOscillator();
-        oscillator.type = voice.type;
-        oscillator.detune.setValueAtTime(index === 0 ? -4 : 7, now);
-        oscillator.frequency.setValueAtTime(voice.from, now);
-        oscillator.frequency.exponentialRampToValueAtTime(voice.to, now + profile.duration);
-        oscillator.connect(filter);
-        oscillator.start(now + index * .002);
-        oscillator.stop(now + profile.duration);
-      });
+        filter.type = "lowpass";
+        filter.frequency.setValueAtTime(cue === "press" ? 1800 : 2600, now);
+        master.gain.setValueAtTime(.0001, now);
+        master.gain.exponentialRampToValueAtTime(profile.volume, now + .006);
+        master.gain.exponentialRampToValueAtTime(.0001, now + profile.duration);
+        filter.connect(master);
+        master.connect(audio.destination);
 
-      window.setTimeout(() => void audio.close(), (profile.duration + .08) * 1000);
+        profile.voices.forEach((voice, index) => {
+          const oscillator = audio.createOscillator();
+          oscillator.type = voice.type;
+          oscillator.detune.setValueAtTime(index === 0 ? -4 : 7, now);
+          oscillator.frequency.setValueAtTime(voice.from, now);
+          oscillator.frequency.exponentialRampToValueAtTime(voice.to, now + profile.duration);
+          oscillator.connect(filter);
+          oscillator.start(now + index * .002);
+          oscillator.stop(now + profile.duration);
+        });
+      };
+
+      if (audio.state === "suspended") {
+        void audio.resume().then(renderCue).catch(() => undefined);
+      } else {
+        renderCue();
+      }
     }
 
     function interactiveTarget(event: PointerEvent) {
@@ -513,15 +547,23 @@ export default function Home() {
       playSound("release");
     }
 
+    document.addEventListener("touchstart", unlockAudio, { capture: true, passive: true });
     document.addEventListener("pointerover", playHover);
     document.addEventListener("pointerdown", playPress);
     document.addEventListener("pointerup", playRelease);
     return () => {
+      document.removeEventListener("touchstart", unlockAudio, { capture: true });
       document.removeEventListener("pointerover", playHover);
       document.removeEventListener("pointerdown", playPress);
       document.removeEventListener("pointerup", playRelease);
     };
   }, [soundEnabled]);
+
+  useEffect(() => () => {
+    const audio = audioContextRef.current;
+    audioContextRef.current = null;
+    if (audio && audio.state !== "closed") void audio.close();
+  }, []);
 
   useEffect(() => {
     const year = new Date().getFullYear();
