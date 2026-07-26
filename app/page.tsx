@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 
 const experiences = [
@@ -348,6 +348,9 @@ type IconName =
     | "documents"
     | "contact"
     | "theme"
+    | "moon"
+    | "system"
+    | "ask"
     | "sound"
     | "email";
 
@@ -361,6 +364,9 @@ function Icon({ name }: { name: IconName }) {
     documents: <><path d="M6 2h9l4 4v16H6V2Z" /><path d="M14 2v5h5M9 12h6M9 16h6" /></>,
     contact: <><circle cx="9" cy="8" r="3" /><path d="M3 20v-2a6 6 0 0 1 12 0v2M16 4a3 3 0 0 1 0 6M17 14a5 5 0 0 1 4 5v1" /></>,
     theme: <><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.41M17.66 6.34l1.41-1.41" /></>,
+    moon: <path d="M20.5 15.4A8.5 8.5 0 0 1 8.6 3.5 8.5 8.5 0 1 0 20.5 15.4Z" />,
+    system: <><rect x="3" y="4" width="18" height="13" rx="2" /><path d="M8 21h8M12 17v4" /></>,
+    ask: <><path d="M4 5h16v11H9l-5 4V5Z" /><path d="M8 9h8M8 12h5" /></>,
     sound: <><path d="M11 5 6 9H3v6h3l5 4V5Z" /><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" /></>,
     email: <><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m4 7 8 6 8-6" /></>,
   };
@@ -406,27 +412,152 @@ function SectionLabel({ number, title }: { number: string; title: string }) {
 }
 
 export default function Home() {
+  type ThemePreference = "system" | "light" | "dark";
+  type ThemeDocument = Document & {
+    startViewTransition?: (update: () => void) => { finished: Promise<void> };
+  };
+  type AskStage = "input" | "analyzing" | "reveal" | "answer";
+  type BrowserNavigator = Navigator & {
+    connection?: { effectiveType?: string };
+    userAgentData?: { platform?: string };
+  };
+
   const pathname = usePathname();
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [themePreference, setThemePreference] = useState<ThemePreference>("system");
   const [menuOpen, setMenuOpen] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [askOpen, setAskOpen] = useState(false);
+  const [askStage, setAskStage] = useState<AskStage>("input");
+  const [askQuestion, setAskQuestion] = useState("");
+  const [askMessage, setAskMessage] = useState("what do you want to ask?");
   const audioContextRef = useRef<AudioContext | null>(null);
+  const askInputRef = useRef<HTMLInputElement | null>(null);
+  const askTimersRef = useRef<number[]>([]);
   const [githubActivity, setGithubActivity] = useState<Array<{ date: string; count: number; level: number } | null>>(
       Array.from({ length: 53 * 7 }, () => null),
   );
 
+  function clearAskTimers() {
+    askTimersRef.current.forEach((timer) => window.clearTimeout(timer));
+    askTimersRef.current = [];
+  }
+
+  function browserName() {
+    const agent = navigator.userAgent;
+    if (/Edg\//.test(agent)) return "Microsoft Edge";
+    if (/Chrome\//.test(agent)) return "Chrome";
+    if (/Firefox\//.test(agent)) return "Firefox";
+    if (/Safari\//.test(agent)) return "Safari";
+    return "your browser";
+  }
+
+  function answerQuestion(question: string) {
+    const normalized = question.toLowerCase();
+    if (/(hire|available|work with|contact|email)/.test(normalized)) {
+      return "yes — i am available for software development opportunities. email me at nekquanico@gmail.com and tell me what you are building.";
+    }
+    if (/(stack|technology|technologies|tools)/.test(normalized)) {
+      return "my core stack is TypeScript, React, Next.js, Node.js, Python, PostgreSQL, AWS, Docker, and modern AI tooling.";
+    }
+    if (/(project|portfolio|build|made)/.test(normalized)) {
+      return "my selected work covers healthcare, AI products, responsive interfaces, and full-stack applications. open the projects section for the complete breakdown.";
+    }
+    if (/(experience|background|about you|who are you)/.test(normalized)) {
+      return "i am Ken Aldrey Quanico, a software developer focused on dependable web applications, AI software engineering, and useful product experiences.";
+    }
+    if (/(location|where are you|based)/.test(normalized)) {
+      return "i am based in Bacolod, Philippines, and open to remote or collaborative opportunities.";
+    }
+    return "that deserves a real conversation. send it to nekquanico@gmail.com and i will answer it personally.";
+  }
+
+  function openAsk() {
+    clearAskTimers();
+    setAskQuestion("");
+    setAskStage("input");
+    setAskMessage("what do you want to ask?");
+    setAskOpen(true);
+  }
+
+  function closeAsk() {
+    clearAskTimers();
+    setAskOpen(false);
+  }
+
+  function submitAsk(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const question = askQuestion.trim();
+    if (!question) {
+      askInputRef.current?.focus();
+      return;
+    }
+
+    clearAskTimers();
+    setAskStage("analyzing");
+    setAskMessage("analyzing…");
+
+    const browserNavigator = navigator as BrowserNavigator;
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "your local timezone";
+    const localTime = new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-digit" }).format(new Date());
+    const approximateRegion = timezone === "Asia/Manila"
+        ? "the Philippines, inferred from your timezone"
+        : `the ${timezone.replaceAll("_", " ")} timezone`;
+    const connection = browserNavigator.connection?.effectiveType?.toUpperCase();
+    const referrer = document.referrer
+        ? (() => {
+          try {
+            return new URL(document.referrer).hostname.replace(/^www\./, "");
+          } catch {
+            return "another page";
+          }
+        })()
+        : "a direct visit or private source";
+    const platform = browserNavigator.userAgentData?.platform || navigator.platform || "your device";
+    const messages = [
+      "here is what your browser already shared when you opened this site",
+      `your timezone is ${timezone} and it is around ${localTime} where you are`,
+      `your approximate region is ${approximateRegion} — this is not precise location`,
+      connection ? `you are on a ${connection} connection` : "your browser did not report a connection type",
+      `you arrived here from ${referrer}`,
+      `you are using ${browserName()} on ${platform}`,
+      `your language is ${navigator.language} and your viewport is ${window.innerWidth} × ${window.innerHeight}`,
+      "none of this needed a permission prompt",
+      "these details stay in your browser and are not stored or sent",
+      "as for your question",
+      answerQuestion(question),
+    ];
+
+    messages.forEach((message, index) => {
+      const timer = window.setTimeout(() => {
+        setAskStage(index === messages.length - 1 ? "answer" : "reveal");
+        setAskMessage(message);
+      }, 850 + index * 720);
+      askTimersRef.current.push(timer);
+    });
+  }
+
   useEffect(() => {
     const stored = window.localStorage.getItem("ken-portfolio-theme");
-    const initial =
-        stored === "dark" ||
-        (!stored && window.matchMedia("(prefers-color-scheme: dark)").matches)
-            ? "dark"
-            : "light";
-    setTheme(initial);
-    document.documentElement.dataset.theme = initial;
+    setThemePreference(stored === "light" || stored === "dark" || stored === "system" ? stored : "system");
     setSoundEnabled(window.localStorage.getItem("ken-portfolio-sound") !== "off");
-
   }, []);
+
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const applySystemTheme = () => {
+      const resolvedTheme = themePreference === "system" ? (media.matches ? "dark" : "light") : themePreference;
+      setTheme(resolvedTheme);
+      document.documentElement.dataset.theme = resolvedTheme;
+      document.documentElement.dataset.themeMode = themePreference;
+    };
+
+    applySystemTheme();
+    if (themePreference !== "system") return;
+
+    media.addEventListener("change", applySystemTheme);
+    return () => media.removeEventListener("change", applySystemTheme);
+  }, [themePreference]);
 
   useEffect(() => {
     type SoundCue = "tick" | "press" | "release";
@@ -583,11 +714,36 @@ export default function Home() {
         .catch(() => undefined);
   }, []);
 
-  function toggleTheme() {
-    const nextTheme = theme === "dark" ? "light" : "dark";
-    setTheme(nextTheme);
-    document.documentElement.dataset.theme = nextTheme;
-    window.localStorage.setItem("ken-portfolio-theme", nextTheme);
+  function toggleTheme(button: HTMLButtonElement) {
+    const modes: ThemePreference[] = ["system", "light", "dark"];
+    const nextPreference = modes[(modes.indexOf(themePreference) + 1) % modes.length];
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const nextTheme = nextPreference === "system" ? (media.matches ? "dark" : "light") : nextPreference;
+    const root = document.documentElement;
+    const bounds = button.getBoundingClientRect();
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    root.style.setProperty("--theme-origin-x", `${bounds.left + bounds.width / 2}px`);
+    root.style.setProperty("--theme-origin-y", `${bounds.top + bounds.height / 2}px`);
+    root.dataset.themeTransition = "active";
+
+    const commitTheme = () => {
+      setThemePreference(nextPreference);
+      setTheme(nextTheme);
+      root.dataset.theme = nextTheme;
+      root.dataset.themeMode = nextPreference;
+      window.localStorage.setItem("ken-portfolio-theme", nextPreference);
+    };
+
+    const transitionDocument = document as ThemeDocument;
+    if (reduceMotion || !transitionDocument.startViewTransition) {
+      commitTheme();
+      window.setTimeout(() => delete root.dataset.themeTransition, reduceMotion ? 30 : 700);
+      return;
+    }
+
+    const transition = transitionDocument.startViewTransition(commitTheme);
+    void transition.finished.finally(() => delete root.dataset.themeTransition);
   }
 
   function closeMenu() {
@@ -605,6 +761,7 @@ export default function Home() {
         <a className="skip-link" href="#main">
           Skip to content
         </a>
+        <span className="theme-burst" aria-hidden="true" />
 
         <header className="site-header">
           <a className="wordmark" href="/" aria-label="Ken Aldrey Quanico, home">
@@ -640,12 +797,12 @@ export default function Home() {
             <button
                 className="theme-toggle"
                 type="button"
-                aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
-                aria-pressed={theme === "dark"}
-                onClick={toggleTheme}
+                aria-label={`Theme mode: ${themePreference}. Switch to ${themePreference === "system" ? "light" : themePreference === "light" ? "dark" : "system"} mode`}
+                title={`Theme: ${themePreference[0].toUpperCase()}${themePreference.slice(1)}`}
+                onClick={(event) => toggleTheme(event.currentTarget)}
             >
-              <Icon name="theme" />
-              <span>{theme === "dark" ? "Light mode" : "Dark mode"}</span>
+              <Icon name={themePreference === "system" ? "system" : theme === "dark" ? "moon" : "theme"} />
+              <span>{themePreference[0].toUpperCase()}{themePreference.slice(1)}</span>
             </button>
             <button
                 className="sound-toggle"
