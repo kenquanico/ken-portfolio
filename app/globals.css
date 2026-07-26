@@ -153,6 +153,13 @@ img { max-width: 100%; }
   font-size: 8px;
   transition: border-color 150ms ease, color 150ms ease, background-color 150ms ease;
 }
+.sound-toggle {
+  width: 30px;
+  height: 30px;
+  min-height: 30px;
+  padding: 0;
+  border-radius: 50%;
+}
 .theme-toggle:hover,
 .sound-toggle:hover,
 .nav-email:hover,
@@ -687,7 +694,7 @@ main::before {
   object-fit: contain;
   object-position: center;
 }
-:root[data-theme="dark"] .certification-card img { filter: brightness(0) invert(1); }
+:root[data-theme="dark"] .certification-card img { filter: none; }
 .certification-title {
   position: relative;
   margin: 0;
@@ -973,6 +980,7 @@ main::before {
   .theme-toggle,
   .sound-toggle,
   .nav-email { width: 32px; padding: 0; }
+  .sound-toggle { width: 30px; height: 30px; min-height: 30px; border-radius: 50%; }
   .theme-toggle span:last-child,
   .sound-toggle span,
   .nav-email span { display: none; }

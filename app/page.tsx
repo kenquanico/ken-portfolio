@@ -479,7 +479,7 @@ export default function Home() {
             </span>
             <span className="wordmark-copy">
               <span className="wordmark-name">Ken Quanico</span>
-              <span className="wordmark-kicker">Web Developer</span>
+              <span className="wordmark-kicker">Software Developer</span>
             </span>
           </a>
 
@@ -500,8 +500,6 @@ export default function Home() {
             <a className={pathname === "/stack" ? "is-active" : ""} href="/stack" onClick={closeMenu} aria-current={pathname === "/stack" ? "page" : undefined}><Icon name="stack" />Stack</a>
             <a className={pathname === "/certifications" ? "is-active" : ""} href="/certifications" onClick={closeMenu} aria-current={pathname === "/certifications" ? "page" : undefined}><Icon name="certifications" />Certifications</a>
             <a className={pathname === "/recognition" ? "is-active" : ""} href="/recognition" onClick={closeMenu} aria-current={pathname === "/recognition" ? "page" : undefined}><Icon name="recognition" />Recognition</a>
-            <a className={pathname === "/documents" ? "is-active" : ""} href="/documents" onClick={closeMenu} aria-current={pathname === "/documents" ? "page" : undefined}><Icon name="documents" />Documents</a>
-            <a className={pathname === "/contact" ? "is-active" : ""} href="/contact" onClick={closeMenu} aria-current={pathname === "/contact" ? "page" : undefined}><Icon name="contact" />Contact</a>
           </nav>
 
           <div className="sidebar-footer">
@@ -515,9 +513,22 @@ export default function Home() {
               <Icon name="theme" />
               <span>{theme === "dark" ? "Light mode" : "Dark mode"}</span>
             </button>
-            <button className="sound-toggle" type="button" aria-label={soundEnabled ? "Mute interface sounds" : "Enable interface sounds"} aria-pressed={soundEnabled} onClick={toggleSound}>
-              <Icon name="sound" />
-              <span>{soundEnabled ? "Sound on" : "Sound off"}</span>
+            <button
+                className="sound-toggle"
+                type="button"
+                data-sound-toggle=""
+                data-cuelume-silent=""
+                aria-label={soundEnabled ? "Mute interface sounds" : "Enable interface sounds"}
+                aria-pressed={soundEnabled}
+                title={soundEnabled ? "Sounds on" : "Sounds off"}
+                onClick={toggleSound}
+            >
+              <svg data-sound-on="" className="ui-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true" style={{ display: soundEnabled ? undefined : "none" }}>
+                <path d="M5 10v4h3l4 3V7L8 10H5zM16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <svg data-sound-off="" className="ui-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true" style={{ display: soundEnabled ? "none" : undefined }}>
+                <path d="M5 10v4h3l4 3V7L8 10H5zM16 10l5 5M21 10l-5 5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
             </button>
             <a className="nav-email" href="mailto:nekquanico@gmail.com" aria-label="Email Ken Quanico"><Icon name="email" /><span>Email</span></a>
           </div>
@@ -535,9 +546,9 @@ export default function Home() {
             </div>
 
             <div className="hero-content">
-              <p className="eyebrow">Web Developer</p>
+              <p className="eyebrow">Software Developer</p>
               <h1 className="hero-name">Ken Aldrey Quanico</h1>
-              <p className="hero-statement">I’m a Web Developer. I build modern web applications, and these days I’m focused on AI Software Engineering.</p>
+              <p className="hero-statement">I’m a Software Developer. I build modern web applications, and these days I’m focused on AI Software Engineering.</p>
               <p className="hero-intro">
                 Right now I’m building new products every day. I enjoy turning rough ideas
                 into reliable experiences people can actually use.

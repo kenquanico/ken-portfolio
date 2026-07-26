@@ -4,9 +4,9 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Ken Aldrey Quanico — Web Developer",
+  title: "Ken Aldrey Quanico — Software Developer",
   description:
-    "Portfolio of Ken Aldrey Quanico, a web developer building modern web and mobile applications with a focus on generative AI.",
+    "Portfolio of Ken Aldrey Quanico, a software developer building modern web and mobile applications with a focus on generative AI.",
   icons: {
     icon: "/images/profile-icon.png",
     apple: "/apple-icon.png",
