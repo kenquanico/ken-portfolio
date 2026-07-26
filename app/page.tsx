@@ -409,10 +409,8 @@ export default function Home() {
 
         <header className="site-header">
           <a className="wordmark" href="/" aria-label="Ken Aldrey Quanico, home">
-          <span className="wordmark-mark" aria-hidden="true">
-            <img src="/images/profile-icon.png" alt="" />
-          </span>
             <span className="wordmark-name">Ken Quanico</span>
+            <span className="wordmark-kicker">Web Developer</span>
           </a>
 
           <button
@@ -427,22 +425,31 @@ export default function Home() {
           </button>
 
           <nav className={`site-nav${menuOpen ? " is-open" : ""}`} aria-label="Main navigation">
-            <a href="/stack" onClick={closeMenu}>Stack</a>
-            <a href="/projects" onClick={closeMenu}>Projects</a>
-            <a href="/experience" onClick={closeMenu}>Experience</a>
-            <a href="/certifications" onClick={closeMenu}>Certifications</a>
+            <a className={pathname === "/projects" ? "is-active" : ""} href="/projects" onClick={closeMenu} aria-current={pathname === "/projects" ? "page" : undefined}>Projects</a>
+            <a className={pathname === "/experience" ? "is-active" : ""} href="/experience" onClick={closeMenu} aria-current={pathname === "/experience" ? "page" : undefined}>Experience</a>
+            <a className={pathname === "/stack" ? "is-active" : ""} href="/stack" onClick={closeMenu} aria-current={pathname === "/stack" ? "page" : undefined}>Stack</a>
+            <a className={pathname === "/certifications" ? "is-active" : ""} href="/certifications" onClick={closeMenu} aria-current={pathname === "/certifications" ? "page" : undefined}>Certifications</a>
+            <a className={pathname === "/recognition" ? "is-active" : ""} href="/recognition" onClick={closeMenu} aria-current={pathname === "/recognition" ? "page" : undefined}>Recognition</a>
+            <a className={pathname === "/documents" ? "is-active" : ""} href="/documents" onClick={closeMenu} aria-current={pathname === "/documents" ? "page" : undefined}>Documents</a>
+            <a className={pathname === "/contact" ? "is-active" : ""} href="/contact" onClick={closeMenu} aria-current={pathname === "/contact" ? "page" : undefined}>Contact</a>
           </nav>
 
-          <button
-              className="theme-toggle"
-              type="button"
-              aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
-              aria-pressed={theme === "dark"}
-              onClick={toggleTheme}
-          >
-            <span className="theme-dot" aria-hidden="true" />
-            <span>{theme === "dark" ? "Light" : "Dark"}</span>
-          </button>
+          <div className="sidebar-footer">
+            <button
+                className="theme-toggle"
+                type="button"
+                aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+                aria-pressed={theme === "dark"}
+                onClick={toggleTheme}
+            >
+              <span className="theme-dot" aria-hidden="true" />
+              <span>{theme === "dark" ? "Light mode" : "Dark mode"}</span>
+            </button>
+            <div className="sidebar-contact">
+              <span>For work &amp; everything else</span>
+              <a href="mailto:nekquanico@gmail.com">nekquanico@gmail.com ↗</a>
+            </div>
+          </div>
         </header>
 
         <main id="main" className={pathname === "/" ? "main-home" : "main-detail"}>
@@ -458,7 +465,7 @@ export default function Home() {
 
             <div className="hero-content">
               <p className="eyebrow">Web Developer</p>
-              <p className="hero-name">Ken Aldrey Quanico</p>
+              <h1 className="hero-name">Ken Aldrey Quanico</h1>
               <p className="hero-statement">I’m a Web Developer. I build modern web applications, and these days I’m focused on AI Software Engineering.</p>
               <p className="hero-intro">
                 Right now I’m building new products every day. I enjoy turning rough ideas
@@ -473,6 +480,25 @@ export default function Home() {
                 <span className="availability-dot" aria-hidden="true" />
                 Available for opportunities
               </div>
+            </div>
+          </section>}
+
+          {pathname === "/" && <section className="profile-metrics section-shell" aria-label="Profile summary">
+            <div className="profile-metric">
+              <span>Focus</span>
+              <p>AI / Full Stack</p>
+            </div>
+            <div className="profile-metric">
+              <span>Location</span>
+              <p>Bacolod, PH</p>
+            </div>
+            <div className="profile-metric">
+              <span>Availability</span>
+              <p>Open to work</p>
+            </div>
+            <div className="profile-metric">
+              <span>Building</span>
+              <p>Web + Mobile</p>
             </div>
           </section>}
 
@@ -682,6 +708,15 @@ export default function Home() {
               <p>© {new Date().getFullYear()} Ken Quanico</p>
             </div>
           </section>}
+
+          {pathname === "/" && <footer className="site-footer section-shell">
+            <p>© {new Date().getFullYear()} Ken Quanico · Bacolod, PH</p>
+            <div>
+              <a href="https://github.com/kenquanico" target="_blank" rel="noreferrer">GitHub ↗</a>
+              <a href="https://www.linkedin.com/in/kenldry" target="_blank" rel="noreferrer">LinkedIn ↗</a>
+              <a href="mailto:nekquanico@gmail.com">Email ↗</a>
+            </div>
+          </footer>}
 
         </main>
       </>
