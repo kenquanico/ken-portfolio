@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 
 const experiences = [
@@ -339,6 +339,39 @@ const homepageCertifications = [
 ];
 const githubMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
+type IconName =
+    | "projects"
+    | "experience"
+    | "stack"
+    | "certifications"
+    | "recognition"
+    | "documents"
+    | "contact"
+    | "theme"
+    | "sound"
+    | "email";
+
+function Icon({ name }: { name: IconName }) {
+  const paths: Record<IconName, ReactNode> = {
+    projects: <><rect x="3" y="4" width="7" height="7" rx="1" /><rect x="14" y="4" width="7" height="7" rx="1" /><rect x="3" y="15" width="7" height="5" rx="1" /><rect x="14" y="15" width="7" height="5" rx="1" /></>,
+    experience: <><path d="M9 6V4h6v2" /><rect x="3" y="6" width="18" height="14" rx="2" /><path d="M3 11h18M10 11v2h4v-2" /></>,
+    stack: <><path d="m12 3-9 5 9 5 9-5-9-5Z" /><path d="m3 12 9 5 9-5M3 16l9 5 9-5" /></>,
+    certifications: <><circle cx="12" cy="9" r="6" /><path d="m8.5 14-1 7 4.5-2 4.5 2-1-7" /></>,
+    recognition: <><path d="M8 3h8v6a4 4 0 0 1-8 0V3Z" /><path d="M8 5H4v2a4 4 0 0 0 4 4M16 5h4v2a4 4 0 0 1-4 4M12 13v5M8 21h8M9 18h6" /></>,
+    documents: <><path d="M6 2h9l4 4v16H6V2Z" /><path d="M14 2v5h5M9 12h6M9 16h6" /></>,
+    contact: <><circle cx="9" cy="8" r="3" /><path d="M3 20v-2a6 6 0 0 1 12 0v2M16 4a3 3 0 0 1 0 6M17 14a5 5 0 0 1 4 5v1" /></>,
+    theme: <><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.41M17.66 6.34l1.41-1.41" /></>,
+    sound: <><path d="M11 5 6 9H3v6h3l5 4V5Z" /><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" /></>,
+    email: <><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m4 7 8 6 8-6" /></>,
+  };
+
+  return (
+      <svg className="ui-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        {paths[name]}
+      </svg>
+  );
+}
+
 function projectLogoClass(name: string) {
   if (name === "FutureSphere") return " project-logo-light-source";
   if (name === "DRAPÉ") return " project-logo-dark-source";
@@ -358,6 +391,7 @@ export default function Home() {
   const pathname = usePathname();
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(true);
   const [githubActivity, setGithubActivity] = useState<Array<{ date: string; count: number; level: number } | null>>(
       Array.from({ length: 53 * 7 }, () => null),
   );
@@ -371,8 +405,33 @@ export default function Home() {
             : "light";
     setTheme(initial);
     document.documentElement.dataset.theme = initial;
+    setSoundEnabled(window.localStorage.getItem("ken-portfolio-sound") !== "off");
 
   }, []);
+
+  useEffect(() => {
+    function playClick(event: PointerEvent) {
+      if (!soundEnabled || !(event.target instanceof Element) || !event.target.closest("a, button")) return;
+
+      const audio = new AudioContext();
+      const oscillator = audio.createOscillator();
+      const gain = audio.createGain();
+
+      oscillator.type = "sine";
+      oscillator.frequency.setValueAtTime(520, audio.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(330, audio.currentTime + 0.045);
+      gain.gain.setValueAtTime(0.028, audio.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + 0.055);
+      oscillator.connect(gain);
+      gain.connect(audio.destination);
+      oscillator.start();
+      oscillator.stop(audio.currentTime + 0.055);
+      oscillator.addEventListener("ended", () => void audio.close(), { once: true });
+    }
+
+    document.addEventListener("pointerdown", playClick);
+    return () => document.removeEventListener("pointerdown", playClick);
+  }, [soundEnabled]);
 
   useEffect(() => {
     const year = new Date().getFullYear();
@@ -401,6 +460,12 @@ export default function Home() {
     setMenuOpen(false);
   }
 
+  function toggleSound() {
+    const next = !soundEnabled;
+    setSoundEnabled(next);
+    window.localStorage.setItem("ken-portfolio-sound", next ? "on" : "off");
+  }
+
   return (
       <>
         <a className="skip-link" href="#main">
@@ -409,8 +474,13 @@ export default function Home() {
 
         <header className="site-header">
           <a className="wordmark" href="/" aria-label="Ken Aldrey Quanico, home">
-            <span className="wordmark-name">Ken Quanico</span>
-            <span className="wordmark-kicker">Web Developer</span>
+            <span className="wordmark-mark" aria-hidden="true">
+              <img src="/images/profile-icon.png" alt="" />
+            </span>
+            <span className="wordmark-copy">
+              <span className="wordmark-name">Ken Quanico</span>
+              <span className="wordmark-kicker">Web Developer</span>
+            </span>
           </a>
 
           <button
@@ -425,13 +495,13 @@ export default function Home() {
           </button>
 
           <nav className={`site-nav${menuOpen ? " is-open" : ""}`} aria-label="Main navigation">
-            <a className={pathname === "/projects" ? "is-active" : ""} href="/projects" onClick={closeMenu} aria-current={pathname === "/projects" ? "page" : undefined}>Projects</a>
-            <a className={pathname === "/experience" ? "is-active" : ""} href="/experience" onClick={closeMenu} aria-current={pathname === "/experience" ? "page" : undefined}>Experience</a>
-            <a className={pathname === "/stack" ? "is-active" : ""} href="/stack" onClick={closeMenu} aria-current={pathname === "/stack" ? "page" : undefined}>Stack</a>
-            <a className={pathname === "/certifications" ? "is-active" : ""} href="/certifications" onClick={closeMenu} aria-current={pathname === "/certifications" ? "page" : undefined}>Certifications</a>
-            <a className={pathname === "/recognition" ? "is-active" : ""} href="/recognition" onClick={closeMenu} aria-current={pathname === "/recognition" ? "page" : undefined}>Recognition</a>
-            <a className={pathname === "/documents" ? "is-active" : ""} href="/documents" onClick={closeMenu} aria-current={pathname === "/documents" ? "page" : undefined}>Documents</a>
-            <a className={pathname === "/contact" ? "is-active" : ""} href="/contact" onClick={closeMenu} aria-current={pathname === "/contact" ? "page" : undefined}>Contact</a>
+            <a className={pathname === "/projects" ? "is-active" : ""} href="/projects" onClick={closeMenu} aria-current={pathname === "/projects" ? "page" : undefined}><Icon name="projects" />Projects</a>
+            <a className={pathname === "/experience" ? "is-active" : ""} href="/experience" onClick={closeMenu} aria-current={pathname === "/experience" ? "page" : undefined}><Icon name="experience" />Experience</a>
+            <a className={pathname === "/stack" ? "is-active" : ""} href="/stack" onClick={closeMenu} aria-current={pathname === "/stack" ? "page" : undefined}><Icon name="stack" />Stack</a>
+            <a className={pathname === "/certifications" ? "is-active" : ""} href="/certifications" onClick={closeMenu} aria-current={pathname === "/certifications" ? "page" : undefined}><Icon name="certifications" />Certifications</a>
+            <a className={pathname === "/recognition" ? "is-active" : ""} href="/recognition" onClick={closeMenu} aria-current={pathname === "/recognition" ? "page" : undefined}><Icon name="recognition" />Recognition</a>
+            <a className={pathname === "/documents" ? "is-active" : ""} href="/documents" onClick={closeMenu} aria-current={pathname === "/documents" ? "page" : undefined}><Icon name="documents" />Documents</a>
+            <a className={pathname === "/contact" ? "is-active" : ""} href="/contact" onClick={closeMenu} aria-current={pathname === "/contact" ? "page" : undefined}><Icon name="contact" />Contact</a>
           </nav>
 
           <div className="sidebar-footer">
@@ -442,13 +512,14 @@ export default function Home() {
                 aria-pressed={theme === "dark"}
                 onClick={toggleTheme}
             >
-              <span className="theme-dot" aria-hidden="true" />
+              <Icon name="theme" />
               <span>{theme === "dark" ? "Light mode" : "Dark mode"}</span>
             </button>
-            <div className="sidebar-contact">
-              <span>For work &amp; everything else</span>
-              <a href="mailto:nekquanico@gmail.com">nekquanico@gmail.com ↗</a>
-            </div>
+            <button className="sound-toggle" type="button" aria-label={soundEnabled ? "Mute interface sounds" : "Enable interface sounds"} aria-pressed={soundEnabled} onClick={toggleSound}>
+              <Icon name="sound" />
+              <span>{soundEnabled ? "Sound on" : "Sound off"}</span>
+            </button>
+            <a className="nav-email" href="mailto:nekquanico@gmail.com" aria-label="Email Ken Quanico"><Icon name="email" /><span>Email</span></a>
           </div>
         </header>
 
