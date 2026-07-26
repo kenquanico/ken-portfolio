@@ -560,6 +560,26 @@ export default function Home() {
   }, [themePreference]);
 
   useEffect(() => {
+    if (!askOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    const focusTimer = window.setTimeout(() => askInputRef.current?.focus(), 80);
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeAsk();
+    };
+
+    document.body.style.overflow = "hidden";
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      window.clearTimeout(focusTimer);
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [askOpen]);
+
+  useEffect(() => () => clearAskTimers(), []);
+
+  useEffect(() => {
     type SoundCue = "tick" | "press" | "release";
     type AudioWindow = Window & { webkitAudioContext?: typeof AudioContext };
 
@@ -714,9 +734,9 @@ export default function Home() {
         .catch(() => undefined);
   }, []);
 
-  function toggleTheme(button: HTMLButtonElement) {
-    const modes: ThemePreference[] = ["system", "light", "dark"];
-    const nextPreference = modes[(modes.indexOf(themePreference) + 1) % modes.length];
+  function selectTheme(nextPreference: ThemePreference, button: HTMLButtonElement) {
+    if (nextPreference === themePreference) return;
+
     const media = window.matchMedia("(prefers-color-scheme: dark)");
     const nextTheme = nextPreference === "system" ? (media.matches ? "dark" : "light") : nextPreference;
     const root = document.documentElement;
@@ -795,15 +815,30 @@ export default function Home() {
 
           <div className="sidebar-footer">
             <button
-                className="theme-toggle"
+                className="ask-toggle"
                 type="button"
-                aria-label={`Theme mode: ${themePreference}. Switch to ${themePreference === "system" ? "light" : themePreference === "light" ? "dark" : "system"} mode`}
-                title={`Theme: ${themePreference[0].toUpperCase()}${themePreference.slice(1)}`}
-                onClick={(event) => toggleTheme(event.currentTarget)}
+                aria-haspopup="dialog"
+                aria-expanded={askOpen}
+                onClick={openAsk}
             >
-              <Icon name={themePreference === "system" ? "system" : theme === "dark" ? "moon" : "theme"} />
-              <span>{themePreference[0].toUpperCase()}{themePreference.slice(1)}</span>
+              <Icon name="ask" />
+              <span>Ask me anything</span>
             </button>
+            <div className="theme-switcher" role="group" aria-label="Theme mode">
+              {(["system", "light", "dark"] as const).map((mode) => (
+                  <button
+                      className={`theme-option${themePreference === mode ? " is-active" : ""}`}
+                      type="button"
+                      aria-label={`Use ${mode} theme`}
+                      aria-pressed={themePreference === mode}
+                      title={`${mode[0].toUpperCase()}${mode.slice(1)} theme`}
+                      key={mode}
+                      onClick={(event) => selectTheme(mode, event.currentTarget)}
+                  >
+                    <Icon name={mode === "system" ? "system" : mode === "light" ? "theme" : "moon"} />
+                  </button>
+              ))}
+            </div>
             <button
                 className="sound-toggle"
                 type="button"
@@ -824,6 +859,44 @@ export default function Home() {
             <a className="nav-email" href="mailto:nekquanico@gmail.com" aria-label="Email Ken Quanico"><Icon name="email" /><span>Email</span></a>
           </div>
         </header>
+
+        {askOpen && (
+            <div className="ask-overlay" role="dialog" aria-modal="true" aria-labelledby="ask-title">
+              <button className="ask-backdrop" type="button" aria-label="Close Ask me anything" onClick={closeAsk} />
+              <div className="ask-content" onClick={() => askStage === "input" && askInputRef.current?.focus()}>
+                <button className="ask-close" type="button" aria-label="Close Ask me anything" onClick={closeAsk}>
+                  <span />
+                  <span />
+                </button>
+
+                <div className={`ask-head${askStage === "answer" ? " is-answer" : ""}`} aria-live="polite">
+                  {(askStage === "analyzing" || askStage === "reveal") && <span className="ask-loader" aria-label="Analyzing" />}
+                  <h2 className={`ask-title${askStage !== "input" ? " is-small" : ""}`} id="ask-title" key={askMessage}>
+                    {askMessage}
+                  </h2>
+                </div>
+
+                {askStage === "input" && (
+                    <form className="ask-field" onSubmit={submitAsk}>
+                      <input
+                          ref={askInputRef}
+                          value={askQuestion}
+                          onChange={(event) => setAskQuestion(event.target.value)}
+                          aria-label="Type your question"
+                          autoComplete="off"
+                          autoCapitalize="sentences"
+                          spellCheck="true"
+                      />
+                      <button type="submit">Ask ↵</button>
+                    </form>
+                )}
+
+                <p className="ask-privacy">
+                  Browser-only session details. No precise location request, storage, or transmission.
+                </p>
+              </div>
+            </div>
+        )}
 
         <main id="main" className={pathname === "/" ? "main-home" : "main-detail"}>
           {pathname === "/" && <section className="hero section-shell" id="top" aria-label="Introduction">
