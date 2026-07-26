@@ -805,7 +805,7 @@ export default function Home() {
         </a>
         <span className="theme-burst" aria-hidden="true" />
 
-        <header className="site-header">
+        <header className={`site-header${pathname === "/" ? " is-home" : ""}`}>
           <a className="wordmark" href="/" aria-label="Ken Aldrey Quanico, home">
             <span className="wordmark-copy">
               <span className="wordmark-name">Ken Quanico</span>
@@ -939,6 +939,16 @@ export default function Home() {
                   src="/images/ken-portrait.png"
                   alt="Portrait of Ken Aldrey Quanico"
               />
+              <button
+                  className="mobile-ask-bubble"
+                  type="button"
+                  aria-haspopup="dialog"
+                  aria-expanded={askOpen}
+                  onClick={openAsk}
+              >
+                <Icon name="ask" />
+                <span>Ask me anything</span>
+              </button>
             </div>
 
             <div className="hero-content">
