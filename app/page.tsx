@@ -629,7 +629,7 @@ export default function Home() {
             <div className="hero-portrait">
               <img
                   className="portrait-photo"
-                  src="/images/ken-portrait.jpg"
+                  src="/images/ken-portrait.png"
                   alt="Portrait of Ken Aldrey Quanico"
               />
               <span className="portrait-caption">Bacolod / PH</span>
