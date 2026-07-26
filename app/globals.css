@@ -257,7 +257,8 @@ main::before {
   position: relative;
   aspect-ratio: 4 / 5;
   overflow: hidden;
-  background: var(--surface);
+  background: #fff;
+  isolation: isolate;
 }
 .hero-portrait::after {
   position: absolute;
@@ -267,6 +268,7 @@ main::before {
   content: "";
   -webkit-mask-image: linear-gradient(to top, #000, transparent 80%);
   mask-image: linear-gradient(to top, #000, transparent 80%);
+  mix-blend-mode: difference;
   opacity: .92;
   pointer-events: none;
 }
