@@ -114,6 +114,114 @@ const featuredPost = {
       "A dependable AI feature is more than a capable model. It is the product system that gives the model boundaries, context, proof, and a graceful way to recover.",
 };
 
+const blogPosts = [
+  {
+    ...featuredPost,
+    dateLabel: "Jul 2026",
+    readLabel: "4 min",
+    art: "signal",
+  },
+  {
+    slug: "shipping-an-offline-first-health-companion",
+    date: "Jul 18, 2026",
+    dateLabel: "Jul 2026",
+    readTime: "3 min read",
+    readLabel: "3 min",
+    title: "Shipping an Offline-First Health Companion",
+    description:
+        "What building Elio taught me about designing dependable health features for moments when connectivity cannot be assumed.",
+    art: "mobile",
+  },
+  {
+    slug: "computer-vision-beyond-the-model",
+    date: "Jul 10, 2026",
+    dateLabel: "Jul 2026",
+    readTime: "3 min read",
+    readLabel: "3 min",
+    title: "Computer Vision Beyond the Model",
+    description:
+        "The product work around detection: clear field reports, useful location context, and interfaces people can understand quickly.",
+    art: "vision",
+  },
+  {
+    slug: "what-support-work-taught-me-about-systems",
+    date: "Jun 28, 2026",
+    dateLabel: "Jun 2026",
+    readTime: "2 min read",
+    readLabel: "2 min",
+    title: "What Support Work Taught Me About Systems",
+    description:
+        "Small operational details often reveal more about reliability than the happy path ever will.",
+    art: "systems",
+  },
+  {
+    slug: "designing-interfaces-for-proof",
+    date: "Jun 21, 2026",
+    dateLabel: "Jun 2026",
+    readTime: "4 min read",
+    readLabel: "4 min",
+    title: "Designing Interfaces for Proof",
+    description:
+        "Why good product states show what happened, what changed, and what the user can safely do next.",
+    art: "proof",
+  },
+  {
+    slug: "a-practical-stack-for-small-teams",
+    date: "Jun 12, 2026",
+    dateLabel: "Jun 2026",
+    readTime: "3 min read",
+    readLabel: "3 min",
+    title: "A Practical Stack for Small Teams",
+    description:
+        "How I choose tools that support fast iteration without creating unnecessary maintenance.",
+    art: "stack",
+  },
+  {
+    slug: "the-quiet-work-behind-ai-features",
+    date: "May 30, 2026",
+    dateLabel: "May 2026",
+    readTime: "3 min read",
+    readLabel: "3 min",
+    title: "The Quiet Work Behind AI Features",
+    description:
+        "Context, permissions, evaluation, and recovery are the less visible parts that make an AI experience useful.",
+    art: "nodes",
+  },
+  {
+    slug: "building-for-the-slowest-connection",
+    date: "May 18, 2026",
+    dateLabel: "May 2026",
+    readTime: "2 min read",
+    readLabel: "2 min",
+    title: "Building for the Slowest Connection",
+    description:
+        "A short field note on making core product flows resilient, understandable, and forgiving.",
+    art: "network",
+  },
+  {
+    slug: "what-brand-systems-teach-developers",
+    date: "May 8, 2026",
+    dateLabel: "May 2026",
+    readTime: "3 min read",
+    readLabel: "3 min",
+    title: "What Brand Systems Teach Developers",
+    description:
+        "Consistency is not decoration. It is a reusable decision system that makes the next piece of work easier.",
+    art: "brand",
+  },
+  {
+    slug: "choosing-the-smallest-complete-version",
+    date: "Apr 26, 2026",
+    dateLabel: "Apr 2026",
+    readTime: "2 min read",
+    readLabel: "2 min",
+    title: "Choosing the Smallest Complete Version",
+    description:
+        "Scope gets clearer when every release is small enough to finish and complete enough to learn from.",
+    art: "scope",
+  },
+];
+
 const certifications = [
   {
     title: "Software Engineering",
@@ -437,9 +545,11 @@ export default function Home() {
   };
 
   const pathname = usePathname();
+  const activeBlogPost = blogPosts.find((post) => pathname === `/blog/${post.slug}`);
   const [themePreference, setThemePreference] = useState<ThemePreference>("system");
   const [menuOpen, setMenuOpen] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [blogView, setBlogView] = useState<"list" | "grid">("list");
   const [askOpen, setAskOpen] = useState(false);
   const [askStage, setAskStage] = useState<AskStage>("input");
   const [askQuestion, setAskQuestion] = useState("");
@@ -830,7 +940,7 @@ export default function Home() {
         </a>
         <span className="theme-burst" aria-hidden="true" />
 
-        <header className={`site-header${pathname === "/" ? " is-home" : ""}`}>
+        <header className={`site-header${pathname === "/" ? " is-home" : ""}${pathname.startsWith("/blog") ? " is-blog" : ""}`}>
           <a className="wordmark" href="/" aria-label="Ken Aldrey Quanico, home">
             <span className="wordmark-copy">
               <span className="wordmark-name">Ken Quanico</span>
@@ -850,11 +960,17 @@ export default function Home() {
           </button>
 
           <nav className={`site-nav${menuOpen ? " is-open" : ""}`} aria-label="Main navigation">
-            <a className={pathname === "/projects" ? "is-active" : ""} href="/projects" onClick={closeMenu} aria-current={pathname === "/projects" ? "page" : undefined}><Icon name="projects" />Projects</a>
-            <a className={pathname === "/experience" ? "is-active" : ""} href="/experience" onClick={closeMenu} aria-current={pathname === "/experience" ? "page" : undefined}><Icon name="experience" />Experience</a>
-            <a className={pathname === "/stack" ? "is-active" : ""} href="/stack" onClick={closeMenu} aria-current={pathname === "/stack" ? "page" : undefined}><Icon name="stack" />Stack</a>
-            <a className={pathname === "/certifications" ? "is-active" : ""} href="/certifications" onClick={closeMenu} aria-current={pathname === "/certifications" ? "page" : undefined}><Icon name="certifications" />Certifications</a>
-            <a className={pathname.startsWith("/blog") ? "is-active" : ""} href="/blog" onClick={closeMenu} aria-current={pathname === "/blog" ? "page" : undefined}><Icon name="blog" />Blog</a>
+            <span className="nav-group">
+              <a className={pathname === "/projects" ? "is-active" : ""} href="/projects" onClick={closeMenu} aria-current={pathname === "/projects" ? "page" : undefined}><Icon name="projects" />Projects</a>
+              <a className={pathname === "/experience" ? "is-active" : ""} href="/experience" onClick={closeMenu} aria-current={pathname === "/experience" ? "page" : undefined}><Icon name="experience" />Experience</a>
+              <a className={pathname === "/stack" ? "is-active" : ""} href="/stack" onClick={closeMenu} aria-current={pathname === "/stack" ? "page" : undefined}><Icon name="stack" />Stack</a>
+              <a className={pathname === "/certifications" ? "is-active" : ""} href="/certifications" onClick={closeMenu} aria-current={pathname === "/certifications" ? "page" : undefined}><Icon name="certifications" />Certifications</a>
+              <a className={pathname.startsWith("/blog") ? "is-active" : ""} href="/blog" onClick={closeMenu} aria-current={pathname === "/blog" ? "page" : undefined}><Icon name="blog" />Blog</a>
+            </span>
+            <span className="nav-group nav-group-secondary">
+              <a className={pathname === "/documents" ? "is-active" : ""} href="/documents" onClick={closeMenu} aria-current={pathname === "/documents" ? "page" : undefined}><Icon name="documents" />Documents</a>
+              <a className={pathname === "/contact" ? "is-active" : ""} href="/contact" onClick={closeMenu} aria-current={pathname === "/contact" ? "page" : undefined}><Icon name="contact" />Contact</a>
+            </span>
           </nav>
 
           <div className="sidebar-footer">
@@ -956,7 +1072,7 @@ export default function Home() {
             </div>
         )}
 
-        <main id="main" className={pathname === "/" ? "main-home" : "main-detail"}>
+        <main id="main" className={pathname === "/" ? "main-home" : `main-detail${pathname.startsWith("/blog") ? " main-blog" : ""}`}>
           {pathname === "/" && <section className="hero section-shell" id="top" aria-label="Introduction">
             <div className="hero-portrait">
               <img
@@ -1174,35 +1290,63 @@ export default function Home() {
 
           {pathname === "/blog" && <section className="blog section-shell page-section" id="blog" data-reveal>
             <div className="blog-page">
-              <SectionLabel number="05" title="Blog" />
               <div className="blog-index-heading">
-                <h1>Notes on software, AI, and building useful things.</h1>
-                <p>Field notes from the work: what I am learning, testing, and refining as I build dependable digital products.</p>
+                <div>
+                  <h1>blog</h1>
+                  <p>Thoughts, tutorials, and notes on AI, engineering, and building things.</p>
+                </div>
+                <div className="blog-view-toggle" role="group" aria-label="Blog layout">
+                  <button
+                      className={blogView === "list" ? "is-active" : ""}
+                      type="button"
+                      aria-label="Show posts as a list"
+                      aria-pressed={blogView === "list"}
+                      onClick={() => setBlogView("list")}
+                  >
+                    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3.5h2M6 3.5h8M2 8h2M6 8h8M2 12.5h2M6 12.5h8" /></svg>
+                  </button>
+                  <button
+                      className={blogView === "grid" ? "is-active" : ""}
+                      type="button"
+                      aria-label="Show posts as a grid"
+                      aria-pressed={blogView === "grid"}
+                      onClick={() => setBlogView("grid")}
+                  >
+                    <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="2.5" width="4" height="4" /><rect x="9.5" y="2.5" width="4" height="4" /><rect x="2.5" y="9.5" width="4" height="4" /><rect x="9.5" y="9.5" width="4" height="4" /></svg>
+                  </button>
+                </div>
               </div>
-              <div className="blog-list">
-                <a className="blog-card" href={`/blog/${featuredPost.slug}`}>
-                  <div className="blog-cover blog-cover-small" aria-hidden="true">
-                    <span className="blog-cover-orbit blog-cover-orbit-one" />
-                    <span className="blog-cover-orbit blog-cover-orbit-two" />
-                    <span className="blog-cover-core">AI</span>
-                  </div>
-                  <div className="blog-card-copy">
-                    <p className="blog-meta">{featuredPost.date} · {featuredPost.readTime}</p>
-                    <h2>{featuredPost.title}</h2>
-                    <p>{featuredPost.description}</p>
-                    <span>Read article ↗</span>
-                  </div>
-                </a>
+              <div className={`blog-list is-${blogView}`}>
+                {blogPosts.map((post) => (
+                    <a className="blog-card" href={`/blog/${post.slug}`} key={post.slug}>
+                      <div className="blog-thumb" data-art={post.art} aria-hidden="true">
+                        <span />
+                        <span />
+                        <span />
+                      </div>
+                      <div className="blog-card-copy">
+                        <p className="blog-date">{post.dateLabel}</p>
+                        <h2>{post.title}</h2>
+                        <p className="blog-description">{post.description}</p>
+                        <p className="blog-read">Read <span>·</span> {post.readLabel}</p>
+                      </div>
+                    </a>
+                ))}
               </div>
+              <nav className="blog-pagination" aria-label="Blog pages">
+                <span aria-disabled="true">← prev</span>
+                <span>1 / 2</span>
+                <a href="/blog?page=2">next →</a>
+              </nav>
             </div>
           </section>}
 
-          {pathname === `/blog/${featuredPost.slug}` && <article className="blog-article section-shell page-section" data-reveal>
+          {activeBlogPost && <article className="blog-article section-shell page-section" data-reveal>
             <a className="blog-back" href="/blog">‹ all posts</a>
             <header className="blog-article-header">
-              <p className="blog-meta">{featuredPost.date} · {featuredPost.readTime}</p>
-              <h1>{featuredPost.title}</h1>
-              <p className="blog-dek">{featuredPost.description}</p>
+              <p className="blog-meta">{activeBlogPost.date} · {activeBlogPost.readTime}</p>
+              <h1>{activeBlogPost.title}</h1>
+              <p className="blog-dek">{activeBlogPost.description}</p>
               <div className="blog-author">
                 <img src="/images/profile-icon.png" alt="" />
                 <span>Ken Aldrey Quanico</span>
@@ -1217,6 +1361,7 @@ export default function Home() {
             </div>
 
             <div className="blog-prose">
+              {activeBlogPost.slug === featuredPost.slug ? <>
               <p>When a new AI feature feels impressive in a demo but unpredictable in daily use, the model is rarely the only thing that needs attention.</p>
               <p>The real product is the system around it: the context it receives, the actions it may take, the limits it cannot cross, and the evidence it must produce before the interface says the work is complete.</p>
 
@@ -1247,11 +1392,26 @@ export default function Home() {
 
               <h2>Closing note</h2>
               <p>The model may be the most visible part of an AI product, but dependability comes from the complete system. The best experiences make capability feel ordinary, clear, and trustworthy.</p>
+              </> : <>
+                <p>{activeBlogPost.description}</p>
+                <p>This field note collects the decisions, tradeoffs, and practical details behind that work. The useful lessons usually appear between the polished result and the system that had to make it dependable.</p>
+
+                <h2>Start with the real constraint</h2>
+                <p>Clear constraints make product decisions easier. They help separate what must work on the first release from what can wait, and they expose the cases that deserve the most care.</p>
+
+                <h2>Build the smallest complete loop</h2>
+                <p>A focused version should still feel complete: a person can understand the state, finish the core task, and recover when something does not go as planned.</p>
+
+                <blockquote>Small is useful when the learning loop is still complete.</blockquote>
+
+                <h2>Closing note</h2>
+                <p>The best systems make careful engineering feel ordinary. The interface stays clear, the behavior is understandable, and the product earns trust one finished interaction at a time.</p>
+              </>}
             </div>
 
             <footer className="blog-article-footer">
               <a href="/blog">‹ all posts</a>
-              <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent("https://kenquanico.com/blog/" + featuredPost.slug)}`} target="_blank" rel="noreferrer">Share on LinkedIn ↗</a>
+              <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent("https://kenquanico.com/blog/" + activeBlogPost.slug)}`} target="_blank" rel="noreferrer">Share on LinkedIn ↗</a>
             </footer>
           </article>}
 
