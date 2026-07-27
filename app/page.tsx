@@ -105,11 +105,14 @@ const toolsUsed = [
   { name: "Figma", logo: "https://cdn.simpleicons.org/figma" },
 ];
 
-const recognition = [
-  ["Mobile App Hackathon", "Tagisan ng Talino 2026", "1st Runner-Up"],
-  ["Research Colloquium", "Product and research innovation", "Best Innovation"],
-  ["Mobile App Hackathon", "Tagisan ng Talino 2025", "1st Runner-Up"],
-];
+const featuredPost = {
+  slug: "building-ai-products-that-earn-trust",
+  date: "Jul 27, 2026",
+  readTime: "4 min read",
+  title: "Building AI Products That Earn Trust.",
+  description:
+      "A dependable AI feature is more than a capable model. It is the product system that gives the model boundaries, context, proof, and a graceful way to recover.",
+};
 
 const certifications = [
   {
@@ -344,7 +347,7 @@ type IconName =
     | "experience"
     | "stack"
     | "certifications"
-    | "recognition"
+    | "blog"
     | "documents"
     | "contact"
     | "theme"
@@ -360,7 +363,7 @@ function Icon({ name }: { name: IconName }) {
     experience: <><path d="M9 6V4h6v2" /><rect x="3" y="6" width="18" height="14" rx="2" /><path d="M3 11h18M10 11v2h4v-2" /></>,
     stack: <><path d="m12 3-9 5 9 5 9-5-9-5Z" /><path d="m3 12 9 5 9-5M3 16l9 5 9-5" /></>,
     certifications: <><circle cx="12" cy="9" r="6" /><path d="m8.5 14-1 7 4.5-2 4.5 2-1-7" /></>,
-    recognition: <><path d="M8 3h8v6a4 4 0 0 1-8 0V3Z" /><path d="M8 5H4v2a4 4 0 0 0 4 4M16 5h4v2a4 4 0 0 1-4 4M12 13v5M8 21h8M9 18h6" /></>,
+    blog: <><path d="M5 4h14v16H5z" /><path d="M8 8h8M8 12h8M8 16h5" /></>,
     documents: <><path d="M6 2h9l4 4v16H6V2Z" /><path d="M14 2v5h5M9 12h6M9 16h6" /></>,
     contact: <><circle cx="9" cy="8" r="3" /><path d="M3 20v-2a6 6 0 0 1 12 0v2M16 4a3 3 0 0 1 0 6M17 14a5 5 0 0 1 4 5v1" /></>,
     theme: <><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.41M17.66 6.34l1.41-1.41" /></>,
@@ -851,7 +854,7 @@ export default function Home() {
             <a className={pathname === "/experience" ? "is-active" : ""} href="/experience" onClick={closeMenu} aria-current={pathname === "/experience" ? "page" : undefined}><Icon name="experience" />Experience</a>
             <a className={pathname === "/stack" ? "is-active" : ""} href="/stack" onClick={closeMenu} aria-current={pathname === "/stack" ? "page" : undefined}><Icon name="stack" />Stack</a>
             <a className={pathname === "/certifications" ? "is-active" : ""} href="/certifications" onClick={closeMenu} aria-current={pathname === "/certifications" ? "page" : undefined}><Icon name="certifications" />Certifications</a>
-            <a className={pathname === "/recognition" ? "is-active" : ""} href="/recognition" onClick={closeMenu} aria-current={pathname === "/recognition" ? "page" : undefined}><Icon name="recognition" />Recognition</a>
+            <a className={pathname.startsWith("/blog") ? "is-active" : ""} href="/blog" onClick={closeMenu} aria-current={pathname === "/blog" ? "page" : undefined}><Icon name="blog" />Blog</a>
           </nav>
 
           <div className="sidebar-footer">
@@ -1169,20 +1172,88 @@ export default function Home() {
             </a>
           </section>}
 
-          {pathname === "/recognition" && <section className="recognition section-shell page-section" id="recognition" data-reveal>
-            <div className="recognition-page">
-              <SectionLabel number="05" title="Recognition" />
-              <div className="recognition-list">
-                {recognition.map(([title, subtitle, result], index) => (
-                    <article key={`${title}-${subtitle}`}>
-                      <span>{String(index + 1).padStart(2, "0")}</span>
-                      <div><p className="item-title">{title}</p><p>{subtitle}</p></div>
-                      <span className="recognition-result">{result}</span>
-                    </article>
-                ))}
+          {pathname === "/blog" && <section className="blog section-shell page-section" id="blog" data-reveal>
+            <div className="blog-page">
+              <SectionLabel number="05" title="Blog" />
+              <div className="blog-index-heading">
+                <h1>Notes on software, AI, and building useful things.</h1>
+                <p>Field notes from the work: what I am learning, testing, and refining as I build dependable digital products.</p>
+              </div>
+              <div className="blog-list">
+                <a className="blog-card" href={`/blog/${featuredPost.slug}`}>
+                  <div className="blog-cover blog-cover-small" aria-hidden="true">
+                    <span className="blog-cover-orbit blog-cover-orbit-one" />
+                    <span className="blog-cover-orbit blog-cover-orbit-two" />
+                    <span className="blog-cover-core">AI</span>
+                  </div>
+                  <div className="blog-card-copy">
+                    <p className="blog-meta">{featuredPost.date} · {featuredPost.readTime}</p>
+                    <h2>{featuredPost.title}</h2>
+                    <p>{featuredPost.description}</p>
+                    <span>Read article ↗</span>
+                  </div>
+                </a>
               </div>
             </div>
           </section>}
+
+          {pathname === `/blog/${featuredPost.slug}` && <article className="blog-article section-shell page-section" data-reveal>
+            <a className="blog-back" href="/blog">‹ all posts</a>
+            <header className="blog-article-header">
+              <p className="blog-meta">{featuredPost.date} · {featuredPost.readTime}</p>
+              <h1>{featuredPost.title}</h1>
+              <p className="blog-dek">{featuredPost.description}</p>
+              <div className="blog-author">
+                <img src="/images/profile-icon.png" alt="" />
+                <span>Ken Aldrey Quanico</span>
+              </div>
+            </header>
+
+            <div className="blog-cover blog-cover-large" role="img" aria-label="Abstract dotted paths connecting around an AI core">
+              <span className="blog-cover-grid" aria-hidden="true" />
+              <span className="blog-cover-orbit blog-cover-orbit-one" aria-hidden="true" />
+              <span className="blog-cover-orbit blog-cover-orbit-two" aria-hidden="true" />
+              <span className="blog-cover-core" aria-hidden="true">AI</span>
+            </div>
+
+            <div className="blog-prose">
+              <p>When a new AI feature feels impressive in a demo but unpredictable in daily use, the model is rarely the only thing that needs attention.</p>
+              <p>The real product is the system around it: the context it receives, the actions it may take, the limits it cannot cross, and the evidence it must produce before the interface says the work is complete.</p>
+
+              <h2>Reliability lives outside the model</h2>
+              <p>A strong model can reason well and still fail inside a weak product. It can lose an important detail, call the wrong tool, repeat an action, or describe a successful outcome that never happened.</p>
+              <p>That does not make the model useless. It means the application needs to turn an uncertain capability into a dependable experience.</p>
+
+              <h2>What the product layer includes</h2>
+              <p>The exact shape changes from product to product, but I look for five foundations:</p>
+              <ul>
+                <li>Clear tool permissions and narrowly defined actions</li>
+                <li>Context that stays relevant as a task gets longer</li>
+                <li>Verification against the system of record</li>
+                <li>Useful recovery when an action fails or needs approval</li>
+                <li>Observability that makes decisions and failures understandable</li>
+              </ul>
+              <p>Imagine an assistant that submits a support ticket. Reaching the final button is not proof. The product should confirm that the ticket exists, capture its identifier, and only then report success.</p>
+
+              <blockquote>A confident answer is not the same as a completed task.</blockquote>
+
+              <h2>Design for proof, not optimism</h2>
+              <p>Good AI interfaces expose meaningful state. They tell people when work is queued, when an external service is unavailable, when approval is required, and what changed after an action ran.</p>
+              <p>This makes the system feel calmer. Users do not need to guess whether the assistant understood them or whether an important action actually happened.</p>
+
+              <h2>Why smaller systems can win</h2>
+              <p>A focused model with the right context and a well-designed workflow can outperform a much larger model dropped into an open-ended prompt. The surrounding product reduces ambiguity before the model ever has to reason about it.</p>
+              <p>That is where a lot of practical AI engineering now lives: not in chasing a perfect answer, but in building the conditions that make useful answers repeatable.</p>
+
+              <h2>Closing note</h2>
+              <p>The model may be the most visible part of an AI product, but dependability comes from the complete system. The best experiences make capability feel ordinary, clear, and trustworthy.</p>
+            </div>
+
+            <footer className="blog-article-footer">
+              <a href="/blog">‹ all posts</a>
+              <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent("https://kenquanico.com/blog/" + featuredPost.slug)}`} target="_blank" rel="noreferrer">Share on LinkedIn ↗</a>
+            </footer>
+          </article>}
 
           {pathname === "/documents" && <section className="documents section-shell page-section" id="documents" data-reveal>
             <div className="documents-page">
