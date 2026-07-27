@@ -522,6 +522,49 @@ function SectionLabel({ number, title }: { number: string; title: string }) {
   );
 }
 
+function AnimatedAskMessage({ text }: { text: string }) {
+  const [display, setDisplay] = useState<{ current: string; previous: string | null; revision: number }>({
+    current: text,
+    previous: null,
+    revision: 0,
+  });
+
+  useEffect(() => {
+    setDisplay((state) => text === state.current
+        ? state
+        : { current: text, previous: state.current, revision: state.revision + 1 });
+
+    const timer = window.setTimeout(() => {
+      setDisplay((state) => state.current === text ? { ...state, previous: null } : state);
+    }, 820);
+
+    return () => window.clearTimeout(timer);
+  }, [text]);
+
+  function letters(value: string, state: "entering" | "leaving") {
+    return (
+        <span className={`ask-word-layer is-${state}`} aria-hidden="true">
+          {Array.from(value).map((character, index) => (
+              <span
+                  className="ask-letter"
+                  style={{ "--letter-index": Math.min(index, 18) } as CSSProperties}
+                  key={`${display.revision}-${state}-${index}`}
+              >
+                {character}
+              </span>
+          ))}
+        </span>
+    );
+  }
+
+  return (
+      <span className="ask-word-transition" aria-label={text}>
+        {display.previous && letters(display.previous, "leaving")}
+        {letters(display.current, "entering")}
+      </span>
+  );
+}
+
 export default function Home() {
   type ThemePreference = "system" | "light" | "dark";
   type ThemeDocument = Document & {
@@ -623,7 +666,9 @@ export default function Home() {
 
     clearAskTimers();
     setAskStage("analyzing");
-    setAskMessage("analyzing…");
+    setAskMessage("thinking…");
+    const analyzingTimer = window.setTimeout(() => setAskMessage("analyzing…"), 900);
+    askTimersRef.current.push(analyzingTimer);
 
     const browserNavigator = navigator as BrowserNavigator;
     let networkProfile: NetworkProfile | null = null;
@@ -940,7 +985,7 @@ export default function Home() {
         </a>
         <span className="theme-burst" aria-hidden="true" />
 
-        <header className={`site-header${pathname === "/" ? " is-home" : ""}${pathname.startsWith("/blog") ? " is-blog" : ""}`}>
+        <header className={`site-header${pathname === "/" ? " is-home" : ""}`}>
           <a className="wordmark" href="/" aria-label="Ken Aldrey Quanico, home">
             <span className="wordmark-copy">
               <span className="wordmark-name">Ken Quanico</span>
@@ -960,17 +1005,11 @@ export default function Home() {
           </button>
 
           <nav className={`site-nav${menuOpen ? " is-open" : ""}`} aria-label="Main navigation">
-            <span className="nav-group">
-              <a className={pathname === "/projects" ? "is-active" : ""} href="/projects" onClick={closeMenu} aria-current={pathname === "/projects" ? "page" : undefined}><Icon name="projects" />Projects</a>
-              <a className={pathname === "/experience" ? "is-active" : ""} href="/experience" onClick={closeMenu} aria-current={pathname === "/experience" ? "page" : undefined}><Icon name="experience" />Experience</a>
-              <a className={pathname === "/stack" ? "is-active" : ""} href="/stack" onClick={closeMenu} aria-current={pathname === "/stack" ? "page" : undefined}><Icon name="stack" />Stack</a>
-              <a className={pathname === "/certifications" ? "is-active" : ""} href="/certifications" onClick={closeMenu} aria-current={pathname === "/certifications" ? "page" : undefined}><Icon name="certifications" />Certifications</a>
-              <a className={pathname.startsWith("/blog") ? "is-active" : ""} href="/blog" onClick={closeMenu} aria-current={pathname === "/blog" ? "page" : undefined}><Icon name="blog" />Blog</a>
-            </span>
-            <span className="nav-group nav-group-secondary">
-              <a className={pathname === "/documents" ? "is-active" : ""} href="/documents" onClick={closeMenu} aria-current={pathname === "/documents" ? "page" : undefined}><Icon name="documents" />Documents</a>
-              <a className={pathname === "/contact" ? "is-active" : ""} href="/contact" onClick={closeMenu} aria-current={pathname === "/contact" ? "page" : undefined}><Icon name="contact" />Contact</a>
-            </span>
+            <a className={pathname === "/projects" ? "is-active" : ""} href="/projects" onClick={closeMenu} aria-current={pathname === "/projects" ? "page" : undefined}><Icon name="projects" />Projects</a>
+            <a className={pathname === "/experience" ? "is-active" : ""} href="/experience" onClick={closeMenu} aria-current={pathname === "/experience" ? "page" : undefined}><Icon name="experience" />Experience</a>
+            <a className={pathname === "/stack" ? "is-active" : ""} href="/stack" onClick={closeMenu} aria-current={pathname === "/stack" ? "page" : undefined}><Icon name="stack" />Stack</a>
+            <a className={pathname === "/certifications" ? "is-active" : ""} href="/certifications" onClick={closeMenu} aria-current={pathname === "/certifications" ? "page" : undefined}><Icon name="certifications" />Certifications</a>
+            <a className={pathname.startsWith("/blog") ? "is-active" : ""} href="/blog" onClick={closeMenu} aria-current={pathname === "/blog" ? "page" : undefined}><Icon name="blog" />Blog</a>
           </nav>
 
           <div className="sidebar-footer">
@@ -1043,10 +1082,10 @@ export default function Home() {
                     </span>
                 )}
 
-                <div className={`ask-head${askStage === "answer" ? " is-answer" : ""}`} aria-live="polite">
-                  {(askStage === "analyzing" || askStage === "reveal") && <span className="ask-loader" aria-label="Analyzing" />}
-                  <h2 className={`ask-title${askStage !== "input" ? " is-small" : ""}`} id="ask-title" key={askMessage}>
-                    {askMessage}
+                <div className={`ask-head${askStage === "answer" ? " is-answer" : ""}${askStage === "analyzing" || askStage === "reveal" ? " is-processing" : ""}`} aria-live="polite">
+                  {(askStage === "analyzing" || askStage === "reveal") && <div className="loader" id="askLoader" aria-label="Analyzing" />}
+                  <h2 className={`ask-title${askStage !== "input" ? " is-small" : ""}`} id="ask-title">
+                    <AnimatedAskMessage text={askMessage} />
                   </h2>
                 </div>
 
@@ -1072,7 +1111,7 @@ export default function Home() {
             </div>
         )}
 
-        <main id="main" className={pathname === "/" ? "main-home" : `main-detail${pathname.startsWith("/blog") ? " main-blog" : ""}`}>
+        <main id="main" className={pathname === "/" ? "main-home" : "main-detail"}>
           {pathname === "/" && <section className="hero section-shell" id="top" aria-label="Introduction">
             <div className="hero-portrait">
               <img
