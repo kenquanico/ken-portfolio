@@ -1315,8 +1315,11 @@ export default function Home() {
             <a className="github-chart" href="https://github.com/kenquanico" target="_blank" rel="noreferrer" aria-label="View Ken Quanico on GitHub">
               <span className="github-months" aria-hidden="true">{githubMonths.map((month) => <span key={month}>{month}</span>)}</span>
               <span className="github-pixel-grid" aria-label="Pixel-style GitHub activity visualization">
-              {githubActivity.map((activity, index) => <span className={`github-pixel level-${activity?.level ?? 0}${activity ? "" : " is-empty"}`} key={index} title={activity ? `${activity.date}: ${activity.count} contributions` : undefined} />)}
-            </span>
+              {githubActivity.map((activity, index) => {
+                const displayLevel = activity?.count && activity.count >= 30 ? 4 : activity?.level ?? 0;
+                return <span className={`github-pixel level-${displayLevel}${activity ? "" : " is-empty"}`} key={index} title={activity ? `${activity.date}: ${activity.count} contributions` : undefined} />;
+              })}
+              </span>
             </a>
           </section>}
 
