@@ -560,7 +560,7 @@ export default function Home() {
   type ThemeDocument = Document & {
     startViewTransition?: (update: () => void) => { finished: Promise<void> };
   };
-  type AskStage = "input" | "analyzing" | "reveal" | "answer";
+  type AskStage = "input" | "analyzing" | "transition" | "answer";
   type BrowserNavigator = Navigator & {
     connection?: { effectiveType?: string };
     deviceMemory?: number;
@@ -655,9 +655,10 @@ export default function Home() {
     }
 
     clearAskTimers();
+    const processingStartedAt = performance.now();
     setAskStage("analyzing");
     setAskMessage("thinking…");
-    const analyzingTimer = window.setTimeout(() => setAskMessage("analyzing…"), 900);
+    const analyzingTimer = window.setTimeout(() => setAskMessage("analyzing…"), 2100);
     askTimersRef.current.push(analyzingTimer);
 
     const browserNavigator = navigator as BrowserNavigator;
@@ -722,11 +723,19 @@ export default function Home() {
       answerQuestion(question),
     ];
 
+    const remainingProcessingTime = (target: number) =>
+        Math.max(0, target - (performance.now() - processingStartedAt));
+    const processingExitTimer = window.setTimeout(
+        () => setAskStage("transition"),
+        remainingProcessingTime(3600),
+    );
+    askTimersRef.current.push(processingExitTimer);
+
     messages.forEach((message, index) => {
       const timer = window.setTimeout(() => {
-        setAskStage(index === messages.length - 1 ? "answer" : "reveal");
+        setAskStage("answer");
         setAskMessage(message);
-      }, 1800 + index * 2600);
+      }, remainingProcessingTime(4400 + index * 2600));
       askTimersRef.current.push(timer);
     });
   }
@@ -1054,22 +1063,26 @@ export default function Home() {
               <button className="ask-backdrop" type="button" aria-label="Close Ask me anything" onClick={closeAsk} />
               <div
                   className="ask-content"
+                  data-stage={askStage}
                   onClick={(event) => {
                     event.stopPropagation();
                     if (askStage === "input") askInputRef.current?.focus();
                     else closeAsk();
                   }}
               >
-                {askStage !== "input" && (
+                {(askStage === "analyzing" || askStage === "transition") && (
                     <span className="ask-bubble" aria-label={`Question: ${askQuestion}`}>
                       {askQuestion}
                     </span>
                 )}
 
-                <div className={`ask-head${askStage === "answer" ? " is-answer" : ""}${askStage === "analyzing" ? " is-processing" : ""}`} aria-live="polite">
-                  {askStage === "analyzing" && <div className="loader" id="askLoader" aria-label="Analyzing" />}
+                <div className={`ask-head${askStage === "answer" ? " is-answer" : ""}${askStage === "analyzing" || askStage === "transition" ? " is-processing" : ""}${askStage === "transition" ? " is-transitioning" : ""}`} aria-live="polite">
+                  {(askStage === "analyzing" || askStage === "transition") && <div className="loader" id="askLoader" aria-label="Analyzing" />}
                   <h2 className={`ask-title${askStage !== "input" ? " is-small" : ""}`} id="ask-title">
-                    <AnimatedAskMessage text={askMessage} />
+                    <AnimatedAskMessage
+                        key={askStage === "answer" ? "answer" : askStage === "input" ? "input" : "processing"}
+                        text={askMessage}
+                    />
                   </h2>
                 </div>
 
@@ -1084,13 +1097,9 @@ export default function Home() {
                           autoCapitalize="sentences"
                           spellCheck="true"
                       />
-                      <button type="submit">Ask ↵</button>
                     </form>
                 )}
 
-                <p className="ask-privacy">
-                  Coarse network metadata comes from ipwho.is. This site does not store it or request precise location.
-                </p>
               </div>
             </div>
         )}
