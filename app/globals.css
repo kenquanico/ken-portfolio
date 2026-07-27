@@ -325,34 +325,12 @@ img { max-width: 100%; }
   height: 23px;
   flex: 0 0 23px;
   background-image:
-      radial-gradient(circle at 75% 25%, color-mix(in srgb, currentColor 34%, transparent) 0 3.25px, transparent 3.6px),
-      radial-gradient(circle at 25% 25%, color-mix(in srgb, currentColor 34%, transparent) 0 3.25px, transparent 3.6px),
-      radial-gradient(circle at 25% 75%, color-mix(in srgb, currentColor 34%, transparent) 0 3.25px, transparent 3.6px),
-      radial-gradient(circle at 75% 75%, color-mix(in srgb, currentColor 34%, transparent) 0 3.25px, transparent 3.6px);
-  color: var(--muted);
-}
-.loader#askLoader::before,
-.loader#askLoader::after {
-  position: absolute;
-  inset: 0;
-  background-repeat: no-repeat;
-  content: "";
-  animation-duration: 920ms;
-  animation-iteration-count: infinite;
-  animation-timing-function: cubic-bezier(.45, 0, .55, 1);
-  animation-direction: alternate;
-}
-.loader#askLoader::before {
-  background-image:
       radial-gradient(circle at 25% 25%, currentColor 0 3.25px, transparent 3.6px),
-      radial-gradient(circle at 75% 75%, currentColor 0 3.25px, transparent 3.6px);
-  animation-name: ask-loader-primary;
-}
-.loader#askLoader::after {
-  background-image:
       radial-gradient(circle at 75% 25%, currentColor 0 3.25px, transparent 3.6px),
-      radial-gradient(circle at 25% 75%, currentColor 0 3.25px, transparent 3.6px);
-  animation-name: ask-loader-secondary;
+      radial-gradient(circle at 25% 75%, currentColor 0 3.25px, transparent 3.6px),
+      radial-gradient(circle at 75% 75%, currentColor 0 3.25px, transparent 3.6px);
+  color: var(--muted);
+  animation: ask-loader-spin 4s linear infinite;
 }
 .ask-title {
   max-width: min(92vw, 780px);
@@ -376,18 +354,43 @@ img { max-width: 100%; }
   grid-area: 1 / 1;
   white-space: pre-wrap;
 }
-.ask-word-layer.is-leaving { pointer-events: none; }
-.ask-letter {
-  animation-delay: calc(var(--letter-index) * 18ms);
-  animation-duration: 420ms;
-  animation-fill-mode: both;
-  animation-timing-function: cubic-bezier(.22, 1, .36, 1);
+.ask-word-layer.is-entering {
+  animation: ask-message-fade-in 360ms cubic-bezier(.22, 1, .36, 1) both;
 }
-.ask-word-layer.is-entering .ask-letter {
-  animation-name: ask-letter-in;
+.ask-word-transition.has-previous .ask-word-layer.is-entering {
+  animation-delay: 320ms;
 }
-.ask-word-layer.is-leaving .ask-letter {
-  animation-name: ask-letter-out;
+.ask-word-layer.is-leaving {
+  pointer-events: none;
+  animation: ask-message-fade-out 280ms cubic-bezier(.4, 0, 1, 1) both;
+}
+.ask-head.is-processing .ask-word-layer {
+  color: transparent;
+  background-image: linear-gradient(
+      90deg,
+      var(--muted) 0%,
+      var(--muted) 32%,
+      color-mix(in srgb, var(--muted) 18%, transparent) 48%,
+      var(--muted) 64%,
+      var(--muted) 100%
+  );
+  background-position: 100% 50%;
+  background-size: 240% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+.ask-head.is-processing .ask-word-layer.is-entering {
+  animation:
+      ask-message-fade-in 360ms cubic-bezier(.22, 1, .36, 1) both,
+      ask-processing-shimmer 1.65s linear infinite;
+}
+.ask-head.is-processing .ask-word-transition.has-previous .ask-word-layer.is-entering {
+  animation-delay: 320ms, 0ms;
+}
+.ask-head.is-processing .ask-word-layer.is-leaving {
+  animation:
+      ask-message-fade-out 280ms cubic-bezier(.4, 0, 1, 1) both,
+      ask-processing-shimmer 1.65s linear infinite;
 }
 .ask-field {
   display: flex;
@@ -438,27 +441,19 @@ img { max-width: 100%; }
 @keyframes ask-content-in {
   to { opacity: 1; transform: none; }
 }
-@keyframes ask-letter-in {
-  from {
-    color: color-mix(in srgb, var(--muted) 32%, transparent);
-    opacity: .16;
-  }
-  to {
-    color: var(--text);
-    opacity: 1;
-  }
+@keyframes ask-message-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
-@keyframes ask-letter-out {
+@keyframes ask-message-fade-out {
   from { opacity: 1; }
   to { opacity: 0; }
 }
-@keyframes ask-loader-primary {
-  from { opacity: 1; }
-  to { opacity: .08; }
+@keyframes ask-loader-spin {
+  to { transform: rotate(360deg); }
 }
-@keyframes ask-loader-secondary {
-  from { opacity: .08; }
-  to { opacity: 1; }
+@keyframes ask-processing-shimmer {
+  to { background-position: -100% 50%; }
 }
 @keyframes mobile-ask-arrive {
   from { opacity: 0; transform: translateY(9px) rotate(-3deg) scale(.82); }

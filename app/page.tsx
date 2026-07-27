@@ -536,31 +536,21 @@ function AnimatedAskMessage({ text }: { text: string }) {
 
     const timer = window.setTimeout(() => {
       setDisplay((state) => state.current === text ? { ...state, previous: null } : state);
-    }, 820);
+    }, 760);
 
     return () => window.clearTimeout(timer);
   }, [text]);
 
-  function letters(value: string, state: "entering" | "leaving") {
-    return (
-        <span className={`ask-word-layer is-${state}`} aria-hidden="true">
-          {Array.from(value).map((character, index) => (
-              <span
-                  className="ask-letter"
-                  style={{ "--letter-index": Math.min(index, 18) } as CSSProperties}
-                  key={`${display.revision}-${state}-${index}`}
-              >
-                {character}
-              </span>
-          ))}
-        </span>
-    );
-  }
-
   return (
-      <span className="ask-word-transition" aria-label={text}>
-        {display.previous && letters(display.previous, "leaving")}
-        {letters(display.current, "entering")}
+      <span className={`ask-word-transition${display.previous ? " has-previous" : ""}`} aria-label={text}>
+        {display.previous && (
+            <span className="ask-word-layer is-leaving" aria-hidden="true">
+              {display.previous}
+            </span>
+        )}
+        <span className="ask-word-layer is-entering" aria-hidden="true" key={`${display.revision}-${display.current}`}>
+          {display.current}
+        </span>
       </span>
   );
 }
@@ -1072,18 +1062,12 @@ export default function Home() {
               >
                 {askStage !== "input" && (
                     <span className="ask-bubble" aria-label={`Question: ${askQuestion}`}>
-                      {askQuestion
-                          .split(/\s+/)
-                          .filter(Boolean)
-                          .slice(0, 2)
-                          .map((word) => word[0])
-                          .join("")
-                          .toUpperCase()}
+                      {askQuestion}
                     </span>
                 )}
 
-                <div className={`ask-head${askStage === "answer" ? " is-answer" : ""}${askStage === "analyzing" || askStage === "reveal" ? " is-processing" : ""}`} aria-live="polite">
-                  {(askStage === "analyzing" || askStage === "reveal") && <div className="loader" id="askLoader" aria-label="Analyzing" />}
+                <div className={`ask-head${askStage === "answer" ? " is-answer" : ""}${askStage === "analyzing" ? " is-processing" : ""}`} aria-live="polite">
+                  {askStage === "analyzing" && <div className="loader" id="askLoader" aria-label="Analyzing" />}
                   <h2 className={`ask-title${askStage !== "input" ? " is-small" : ""}`} id="ask-title">
                     <AnimatedAskMessage text={askMessage} />
                   </h2>
