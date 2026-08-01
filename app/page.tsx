@@ -109,9 +109,9 @@ const featuredPost = {
   slug: "building-ai-products-that-earn-trust",
   date: "Jul 27, 2026",
   readTime: "4 min read",
-  title: "Building AI Products That Earn Trust.",
+  title: "Prompt Engineering Is Dead. Context Engineering Wins.",
   description:
-      "A dependable AI feature is more than a capable model. It is the product system that gives the model boundaries, context, proof, and a graceful way to recover.",
+      "As AI models become smarter, prompts matter less than the information surrounding them. Learn why context engineering is emerging as the skill behind reliable, personalized, and production-ready AI systems.",
 };
 
 const blogPosts = [
@@ -121,105 +121,7 @@ const blogPosts = [
     readLabel: "4 min",
     art: "signal",
   },
-  {
-    slug: "shipping-an-offline-first-health-companion",
-    date: "Jul 18, 2026",
-    dateLabel: "Jul 2026",
-    readTime: "3 min read",
-    readLabel: "3 min",
-    title: "Shipping an Offline-First Health Companion",
-    description:
-        "What building Elio taught me about designing dependable health features for moments when connectivity cannot be assumed.",
-    art: "mobile",
-  },
-  {
-    slug: "computer-vision-beyond-the-model",
-    date: "Jul 10, 2026",
-    dateLabel: "Jul 2026",
-    readTime: "3 min read",
-    readLabel: "3 min",
-    title: "Computer Vision Beyond the Model",
-    description:
-        "The product work around detection: clear field reports, useful location context, and interfaces people can understand quickly.",
-    art: "vision",
-  },
-  {
-    slug: "what-support-work-taught-me-about-systems",
-    date: "Jun 28, 2026",
-    dateLabel: "Jun 2026",
-    readTime: "2 min read",
-    readLabel: "2 min",
-    title: "What Support Work Taught Me About Systems",
-    description:
-        "Small operational details often reveal more about reliability than the happy path ever will.",
-    art: "systems",
-  },
-  {
-    slug: "designing-interfaces-for-proof",
-    date: "Jun 21, 2026",
-    dateLabel: "Jun 2026",
-    readTime: "4 min read",
-    readLabel: "4 min",
-    title: "Designing Interfaces for Proof",
-    description:
-        "Why good product states show what happened, what changed, and what the user can safely do next.",
-    art: "proof",
-  },
-  {
-    slug: "a-practical-stack-for-small-teams",
-    date: "Jun 12, 2026",
-    dateLabel: "Jun 2026",
-    readTime: "3 min read",
-    readLabel: "3 min",
-    title: "A Practical Stack for Small Teams",
-    description:
-        "How I choose tools that support fast iteration without creating unnecessary maintenance.",
-    art: "stack",
-  },
-  {
-    slug: "the-quiet-work-behind-ai-features",
-    date: "May 30, 2026",
-    dateLabel: "May 2026",
-    readTime: "3 min read",
-    readLabel: "3 min",
-    title: "The Quiet Work Behind AI Features",
-    description:
-        "Context, permissions, evaluation, and recovery are the less visible parts that make an AI experience useful.",
-    art: "nodes",
-  },
-  {
-    slug: "building-for-the-slowest-connection",
-    date: "May 18, 2026",
-    dateLabel: "May 2026",
-    readTime: "2 min read",
-    readLabel: "2 min",
-    title: "Building for the Slowest Connection",
-    description:
-        "A short field note on making core product flows resilient, understandable, and forgiving.",
-    art: "network",
-  },
-  {
-    slug: "what-brand-systems-teach-developers",
-    date: "May 8, 2026",
-    dateLabel: "May 2026",
-    readTime: "3 min read",
-    readLabel: "3 min",
-    title: "What Brand Systems Teach Developers",
-    description:
-        "Consistency is not decoration. It is a reusable decision system that makes the next piece of work easier.",
-    art: "brand",
-  },
-  {
-    slug: "choosing-the-smallest-complete-version",
-    date: "Apr 26, 2026",
-    dateLabel: "Apr 2026",
-    readTime: "2 min read",
-    readLabel: "2 min",
-    title: "Choosing the Smallest Complete Version",
-    description:
-        "Scope gets clearer when every release is small enough to finish and complete enough to learn from.",
-    art: "scope",
-  },
+
 ];
 
 const certifications = [
@@ -1355,9 +1257,11 @@ export default function Home() {
                 {blogPosts.map((post) => (
                     <a className="blog-card" href={`/blog/${post.slug}`} key={post.slug}>
                       <div className="blog-thumb" data-art={post.art} aria-hidden="true">
-                        <span />
-                        <span />
-                        <span />
+                        <img
+                            className="blog-thumb-image"
+                            src="/images/context_eng_blog.png"
+                            alt=""
+                        />
                       </div>
                       <div className="blog-card-copy">
                         <p className="blog-date">{post.dateLabel}</p>
@@ -1388,58 +1292,59 @@ export default function Home() {
               </div>
             </header>
 
-            <div className="blog-cover blog-cover-large" role="img" aria-label="Abstract dotted paths connecting around an AI core">
-              <span className="blog-cover-grid" aria-hidden="true" />
-              <span className="blog-cover-orbit blog-cover-orbit-one" aria-hidden="true" />
-              <span className="blog-cover-orbit blog-cover-orbit-two" aria-hidden="true" />
-              <span className="blog-cover-core" aria-hidden="true">AI</span>
+            <div className="blog-cover blog-cover-large">
+              <img
+                  className="blog-cover-image"
+                  src="/images/context_eng_blog.png"
+                  alt="Black and white illustration of a camera, representing context engineering as choosing what an AI model gets to see"
+              />
             </div>
 
             <div className="blog-prose">
               {activeBlogPost.slug === featuredPost.slug ? <>
-              <p>When a new AI feature feels impressive in a demo but unpredictable in daily use, the model is rarely the only thing that needs attention.</p>
-              <p>The real product is the system around it: the context it receives, the actions it may take, the limits it cannot cross, and the evidence it must produce before the interface says the work is complete.</p>
+                <p>Everyone's still arguing about which model is smartest.</p>
 
-              <h2>Reliability lives outside the model</h2>
-              <p>A strong model can reason well and still fail inside a weak product. It can lose an important detail, call the wrong tool, repeat an action, or describe a successful outcome that never happened.</p>
-              <p>That does not make the model useless. It means the application needs to turn an uncertain capability into a dependable experience.</p>
+                <p>Meanwhile the actual skill I keep coming back to has nothing to do with the model at all.</p>
 
-              <h2>What the product layer includes</h2>
-              <p>The exact shape changes from product to product, but I look for five foundations:</p>
-              <ul>
-                <li>Clear tool permissions and narrowly defined actions</li>
-                <li>Context that stays relevant as a task gets longer</li>
-                <li>Verification against the system of record</li>
-                <li>Useful recovery when an action fails or needs approval</li>
-                <li>Observability that makes decisions and failures understandable</li>
-              </ul>
-              <p>Imagine an assistant that submits a support ticket. Reaching the final button is not proof. The product should confirm that the ticket exists, capture its identifier, and only then report success.</p>
+                <h2>The Model Isn't the Actor. It's the Camera.</h2>
 
-              <blockquote>A confident answer is not the same as a completed task.</blockquote>
+                <p>A camera doesn't decide what's in the shot. Someone points it, frames it, decides what stays out of view.</p>
 
-              <h2>Design for proof, not optimism</h2>
-              <p>Good AI interfaces expose meaningful state. They tell people when work is queued, when an external service is unavailable, when approval is required, and what changed after an action ran.</p>
-              <p>This makes the system feel calmer. Users do not need to guess whether the assistant understood them or whether an important action actually happened.</p>
+                <p>That's what context engineering really is — not adding more, but pointing the lens at the right thing.</p>
 
-              <h2>Why smaller systems can win</h2>
-              <p>A focused model with the right context and a well-designed workflow can outperform a much larger model dropped into an open-ended prompt. The surrounding product reduces ambiguity before the model ever has to reason about it.</p>
-              <p>That is where a lot of practical AI engineering now lives: not in chasing a perfect answer, but in building the conditions that make useful answers repeatable.</p>
+                <p>Every extra document, every leftover message, every "just in case" instruction is something in frame that doesn't need to be there. The model still has to look at it.</p>
 
-              <h2>Closing note</h2>
-              <p>The model may be the most visible part of an AI product, but dependability comes from the complete system. The best experiences make capability feel ordinary, clear, and trustworthy.</p>
+                <h2>Most People Are Filming with the Lens Cap Half On</h2>
+
+                <p>They obsess over the prompt — the "script" — while the model is actually working off stale memory, irrelevant history, and half the information it needs.</p>
+
+                <p>You can rewrite the script all day. If the camera's pointed at the wrong thing, the scene still doesn't work.</p>
+
+                <h2>My Take</h2>
+
+                <p>Prompting got the model to say the right words.</p>
+
+                <p>Context is what decides if those words are actually true.</p>
+
+                <p><strong>The best AI teams aren't writing better scripts anymore. They're learning where to point the camera.</strong></p>
+
               </> : <>
                 <p>{activeBlogPost.description}</p>
+
                 <p>This field note collects the decisions, tradeoffs, and practical details behind that work. The useful lessons usually appear between the polished result and the system that had to make it dependable.</p>
 
                 <h2>Start with the real constraint</h2>
+
                 <p>Clear constraints make product decisions easier. They help separate what must work on the first release from what can wait, and they expose the cases that deserve the most care.</p>
 
                 <h2>Build the smallest complete loop</h2>
-                <p>A focused version should still feel complete: a person can understand the state, finish the core task, and recover when something does not go as planned.</p>
+
+                <p>A focused version should still feel complete. A person should understand the state, finish the core task, and recover when something doesn't go as planned.</p>
 
                 <blockquote>Small is useful when the learning loop is still complete.</blockquote>
 
                 <h2>Closing note</h2>
+
                 <p>The best systems make careful engineering feel ordinary. The interface stays clear, the behavior is understandable, and the product earns trust one finished interaction at a time.</p>
               </>}
             </div>
