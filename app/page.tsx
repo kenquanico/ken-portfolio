@@ -585,8 +585,10 @@ export default function Home() {
     const networkLocation = networkLocationParts.join(", ");
     const provider = networkProfile?.connection?.isp || networkProfile?.connection?.org;
     const publicIp = networkProfile?.ip;
-    const coordinates = typeof networkProfile?.latitude === "number" && typeof networkProfile?.longitude === "number"
-        ? `${networkProfile.latitude.toFixed(2)}, ${networkProfile.longitude.toFixed(2)}`
+    const latitude = networkProfile?.latitude;
+    const longitude = networkProfile?.longitude;
+    const coordinates = typeof latitude === "number" && typeof longitude === "number"
+        ? `${latitude.toFixed(2)}, ${longitude.toFixed(2)}`
         : "";
     const referrer = document.referrer
         ? (() => {
@@ -603,6 +605,7 @@ export default function Home() {
     const version = browserVersion();
     const messages = [
       "before i answer",
+      "here is what your browser already shared the moment you opened this site",
       publicIp ? `your public ip address is ${publicIp}` : "your public ip address was not available",
       provider
           ? `you are connected through ${provider}`
