@@ -123,6 +123,15 @@ const agentsPost = {
       "AI agents don't just respond anymore — they act. That shift changes what we grade software on, and what happens the moment it gets something wrong.",
 };
 
+const designPost = {
+  slug: "seconds-to-make-seconds-to-forget-simple-design-ai",
+  date: "Sep 29, 2026",
+  readTime: "4 min read",
+  title: "Seconds to Make, Seconds to Forget: Why Simple Design Still Wins in the Age of AI",
+  description:
+      "AI can generate a poster in seconds, and that's exactly the problem. When every output shares the same patterns, the simple, intentional design is the one people remember.",
+};
+
 const blogPosts = [
   {
     ...featuredPost,
@@ -140,7 +149,18 @@ const blogPosts = [
     image: "/images/blog_2.jpg",
     imageAlt: "Illustration representing AI agents moving from answering questions to taking action on their own",
   },
+  {
+    ...designPost,
+    dateLabel: "Sep 2026",
+    readLabel: "4 min",
+    art: "simple",
+    image: "/images/blog_3.jpg",
+    imageAlt: "Minimal poster design illustrating why simple, intentional design stands out among AI-generated visuals",
+  },
 ];
+
+// Posts shown per blog index page. Pagination is derived from this and blogPosts.length.
+const POSTS_PER_PAGE = 6;
 
 const certifications = [
   {
@@ -264,7 +284,7 @@ const sampleProjects = [
     category: "Every creator ad, backed by permission. (IN DEVELOPMENT)",
     logo: "/project-logos/striq-icon.svg",
     description:
-          "Creator-rights operations platform built with Next.js and Supabase that checks every paid creator ad against its actual contract terms, powered by StriqAI, an in-app assistant that helps agencies renew, replace, or pause at-risk usage.",
+        "Creator-rights operations platform built with Next.js and Supabase that checks every paid creator ad against its actual contract terms, powered by StriqAI, an in-app assistant that helps agencies renew, replace, or pause at-risk usage.",
     url: "https://www.eliocare.tech",
   },
   {
@@ -512,6 +532,7 @@ export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [blogView, setBlogView] = useState<"list" | "grid">("list");
+  const [requestedBlogPage, setRequestedBlogPage] = useState(1);
   const [askOpen, setAskOpen] = useState(false);
   const [askStage, setAskStage] = useState<AskStage>("input");
   const [askQuestion, setAskQuestion] = useState("");
@@ -522,6 +543,15 @@ export default function Home() {
   const [githubActivity, setGithubActivity] = useState<Array<{ date: string; count: number; level: number } | null>>(
       Array.from({ length: 53 * 7 }, () => null),
   );
+
+  // Dynamic blog pagination
+  const totalBlogPages = Math.max(1, Math.ceil(blogPosts.length / POSTS_PER_PAGE));
+  const currentBlogPage = Math.min(Math.max(requestedBlogPage, 1), totalBlogPages);
+  const paginatedBlogPosts = blogPosts.slice(
+      (currentBlogPage - 1) * POSTS_PER_PAGE,
+      currentBlogPage * POSTS_PER_PAGE,
+  );
+  const blogPageHref = (page: number) => (page <= 1 ? "/blog" : `/blog?page=${page}`);
 
   function clearAskTimers() {
     askTimersRef.current.forEach((timer) => window.clearTimeout(timer));
@@ -677,6 +707,13 @@ export default function Home() {
     setThemePreference(stored === "light" || stored === "dark" || stored === "system" ? stored : "system");
     setSoundEnabled(window.localStorage.getItem("ken-portfolio-sound") !== "off");
   }, []);
+
+  // Read ?page= after mount (avoids SSR/hydration mismatch and Suspense requirement)
+  useEffect(() => {
+    const raw = new URLSearchParams(window.location.search).get("page");
+    const parsed = parseInt(raw ?? "1", 10);
+    setRequestedBlogPage(Number.isNaN(parsed) ? 1 : parsed);
+  }, [pathname]);
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-color-scheme: dark)");
@@ -1284,7 +1321,7 @@ export default function Home() {
                 </div>
               </div>
               <div className={`blog-list is-${blogView}`}>
-                {blogPosts.map((post) => (
+                {paginatedBlogPosts.map((post) => (
                     <a className="blog-card" href={`/blog/${post.slug}`} key={post.slug}>
                       <div className="blog-thumb" data-art={post.art} aria-hidden="true">
                         <img
@@ -1302,11 +1339,17 @@ export default function Home() {
                     </a>
                 ))}
               </div>
-              <nav className="blog-pagination" aria-label="Blog pages">
-                <span aria-disabled="true">← prev</span>
-                <span>1 / 2</span>
-                <a href="/blog?page=2">next →</a>
-              </nav>
+              {totalBlogPages > 1 && (
+                  <nav className="blog-pagination" aria-label="Blog pages">
+                    {currentBlogPage > 1
+                        ? <a href={blogPageHref(currentBlogPage - 1)} rel="prev">← prev</a>
+                        : <span aria-disabled="true">← prev</span>}
+                    <span>{currentBlogPage} / {totalBlogPages}</span>
+                    {currentBlogPage < totalBlogPages
+                        ? <a href={blogPageHref(currentBlogPage + 1)} rel="next">next →</a>
+                        : <span aria-disabled="true">next →</span>}
+                  </nav>
+              )}
             </div>
           </section>}
 
@@ -1380,6 +1423,43 @@ export default function Home() {
                 <p>Every product adding agents now has to answer a question chat interfaces never had to: when it's wrong, who finds out first — the user, or the consequence?</p>
 
                 <p><strong>The interesting products right now aren't the ones with the smartest agent. They're the ones that decided, deliberately, what that agent is and isn't allowed to touch.</strong></p>
+
+              </> : activeBlogPost.slug === designPost.slug ? <>
+                <p>AI can now design a poster in a few seconds.</p>
+
+                <p>Type a prompt, get ten layouts before your coffee cools. Logos, flyers, social posts, brand boards — all of it, on demand.</p>
+
+                <p>And yet most people aren't impressed.</p>
+
+                <h2>Fast Made Everything Look the Same</h2>
+
+                <p>Scroll through AI-generated posters and you'll start noticing it. The same centered headline. The same glowing gradients. The same overloaded layout with a shape in every corner.</p>
+
+                <p>It's not a bug. Models learn from what already exists, so they drift toward the average of it. Ask for a poster and you get the most poster-like poster possible.</p>
+
+                <p>When everything is generated from the same patterns, nothing stands out. It takes seconds to make, and seconds to forget.</p>
+
+                <h2>Complexity Used to Mean Effort</h2>
+
+                <p>A dense, detailed design once signaled that someone spent real time on it. That signal is gone. Complexity is now the cheapest thing a machine can produce.</p>
+
+                <p>When effort is free, effort stops impressing anyone. What people notice instead is restraint.</p>
+
+                <h2>Simple Design Is a Decision</h2>
+
+                <p>Simple doesn't mean empty. A clean poster with one typeface, one color, and one clear idea is the result of dozens of choices about what to leave out.</p>
+
+                <p>You read it in three seconds. You remember it an hour later. That's the entire job of a poster.</p>
+
+                <p>Simplicity also feels human. It shows a point of view, and a point of view is exactly what an average of everything can't have.</p>
+
+                <h2>My Take</h2>
+
+                <p>AI is great at producing options. It's not great at deciding which one deserves to exist.</p>
+
+                <p>Taste is that decision. It's knowing what to remove until only the idea is left.</p>
+
+                <p><strong>AI can make a design in seconds. Only a person with taste can make one worth remembering.</strong></p>
 
               </> : <>
                 <p>{activeBlogPost.description}</p>
