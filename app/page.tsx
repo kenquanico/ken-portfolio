@@ -114,14 +114,32 @@ const featuredPost = {
       "As AI models become smarter, prompts matter less than the information surrounding them. Learn why context engineering is emerging as the skill behind reliable, personalized, and production-ready AI systems.",
 };
 
+const agentsPost = {
+  slug: "from-answers-to-actions-ai-agents",
+  date: "Aug 24, 2026",
+  readTime: "5 min read",
+  title: "From Answers to Actions: How AI Agents Are Changing What We Expect Computers to Do",
+  description:
+      "AI agents don't just respond anymore — they act. That shift changes what we grade software on, and what happens the moment it gets something wrong.",
+};
+
 const blogPosts = [
   {
     ...featuredPost,
     dateLabel: "Jul 2026",
     readLabel: "4 min",
     art: "signal",
+    image: "/images/context_eng_blog.png",
+    imageAlt: "Black and white illustration of a camera, representing context engineering as choosing what an AI model gets to see",
   },
-
+  {
+    ...agentsPost,
+    dateLabel: "Aug 2026",
+    readLabel: "5 min",
+    art: "agents",
+    image: "/images/blog_2.jpg",
+    imageAlt: "Illustration representing AI agents moving from answering questions to taking action on their own",
+  },
 ];
 
 const certifications = [
@@ -240,6 +258,15 @@ const documentResources = [
 // Broad discipline label shown as the primary badge (e.g. "AI / DEEP LEARNING", "WEB DEVELOPMENT").
 // `category` stays as the more specific project type shown underneath it.
 const sampleProjects = [
+  {
+    name: "StriqAI",
+    label: "AI / Deep Learning",
+    category: "Every creator ad, backed by permission. (IN DEVELOPMENT)",
+    logo: "/project-logos/striq-icon.svg",
+    description:
+          "Creator-rights operations platform built with Next.js and Supabase that checks every paid creator ad against its actual contract terms, powered by StriqAI, an in-app assistant that helps agencies renew, replace, or pause at-risk usage.",
+    url: "https://www.eliocare.tech",
+  },
   {
     name: "Elio",
     label: "AI / Deep Learning",
@@ -890,9 +917,9 @@ export default function Home() {
         <span className="theme-burst" aria-hidden="true" />
 
         <header className={`site-header${pathname === "/" ? " is-home" : ""}`}>
-          <a className="wordmark" href="/" aria-label="Ken Aldrey Quanico, home">
+          <a className="wordmark" href="/" aria-label="Zack Oraiz">
             <span className="wordmark-copy">
-              <span className="wordmark-name">Ken Quanico</span>
+              <span className="wordmark-name">Zack Oraiz</span>
               <span className="wordmark-kicker">Software Developer</span>
             </span>
           </a>
@@ -1262,7 +1289,7 @@ export default function Home() {
                       <div className="blog-thumb" data-art={post.art} aria-hidden="true">
                         <img
                             className="blog-thumb-image"
-                            src="/images/context_eng_blog.png"
+                            src={post.image}
                             alt=""
                         />
                       </div>
@@ -1298,8 +1325,8 @@ export default function Home() {
             <div className="blog-cover blog-cover-large">
               <img
                   className="blog-cover-image"
-                  src="/images/context_eng_blog.png"
-                  alt="Black and white illustration of a camera, representing context engineering as choosing what an AI model gets to see"
+                  src={activeBlogPost.image}
+                  alt={activeBlogPost.imageAlt}
               />
             </div>
 
@@ -1330,6 +1357,29 @@ export default function Home() {
                 <p>Context is what decides if those words are actually true.</p>
 
                 <p><strong>The best AI teams aren't writing better scripts anymore. They're learning where to point the camera.</strong></p>
+
+              </> : activeBlogPost.slug === agentsPost.slug ? <>
+                <p>Every earlier generation of software waited for you to click.</p>
+
+                <p>Agents don't wait. Give one a goal and it breaks the goal into steps, then starts doing them — booking, filing, editing, sending — without pausing for you to approve each move.</p>
+
+                <h2>The Undo Button Doesn't Scale</h2>
+
+                <p>Answers are cheap to be wrong about. You read one, notice it's off, ask again. An action isn't like that. Once something's been sent, moved, or paid, there's no gentle "let me try that again."</p>
+
+                <p>That's the real shift, and it's easy to miss because the model itself didn't get smarter overnight. What changed is that we removed the checkpoint. Decades of software assumed a human reviews the output before anything happens in the world. Agents are built to skip that step by design.</p>
+
+                <h2>We've Stopped Grading Answers. We're Grading Judgment.</h2>
+
+                <p>A chatbot gets evaluated on whether its response was correct. An agent gets evaluated on whether it knew when <em>not</em> to act — when to pause, ask a clarifying question, or stop entirely.</p>
+
+                <p>That's a harder problem than generating good text. The interesting engineering work has moved from "how do we get a better answer" to "how do we build something that understands the size of its own mistake before it makes it."</p>
+
+                <h2>What This Means for the Software We Build</h2>
+
+                <p>Every product adding agents now has to answer a question chat interfaces never had to: when it's wrong, who finds out first — the user, or the consequence?</p>
+
+                <p><strong>The interesting products right now aren't the ones with the smartest agent. They're the ones that decided, deliberately, what that agent is and isn't allowed to touch.</strong></p>
 
               </> : <>
                 <p>{activeBlogPost.description}</p>
