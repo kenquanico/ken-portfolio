@@ -917,9 +917,9 @@ export default function Home() {
         <span className="theme-burst" aria-hidden="true" />
 
         <header className={`site-header${pathname === "/" ? " is-home" : ""}`}>
-          <a className="wordmark" href="/" aria-label="Zack Oraiz">
+          <a className="wordmark" href="/" aria-label="Ken Aldrey Quanico">
             <span className="wordmark-copy">
-              <span className="wordmark-name">Zack Oraiz</span>
+              <span className="wordmark-name">Ken Aldrey Quanico</span>
               <span className="wordmark-kicker">Software Developer</span>
             </span>
           </a>
