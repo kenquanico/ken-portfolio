@@ -154,7 +154,7 @@ const blogPosts = [
     dateLabel: "Sep 2026",
     readLabel: "4 min",
     art: "simple",
-    image: "/images/blog_3.jpg",
+    image: "/images/blog_3.jpeg",
     imageAlt: "Minimal poster design illustrating why simple, intentional design stands out among AI-generated visuals",
   },
 ];
