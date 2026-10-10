@@ -142,7 +142,6 @@ export default function QuanAIChat() {
                         <img className="quanai-avatar" src={icon} alt="" />
                         <div className="quanai-head-copy">
                             <p>QuanAI</p>
-                            <span>Ken&apos;s portfolio assistant</span>
                         </div>
                         <span className="quanai-counter" title="Questions remaining">
               {Math.max(left, 0)}/{MESSAGE_LIMIT} left
@@ -196,7 +195,7 @@ export default function QuanAIChat() {
                                 value={input}
                                 onChange={(event) => setInput(event.target.value)}
                                 maxLength={MAX_CHARS}
-                                placeholder="Ask about Ken's work…"
+                                placeholder={"Ask about Ken's work…"}
                                 aria-label="Type your question"
                                 autoComplete="off"
                                 disabled={loading}

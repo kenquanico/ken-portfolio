@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 export const runtime = "nodejs";
 
 // Tries the first model, falls back to the second if it is rate-limited or down.
-const MODELS = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"];
+const MODELS = ["openai/gpt-oss-120b", "openai/gpt-oss-20b"];
 const MAX_USER_MESSAGES = 3;
 const MAX_CHARS = 300;
 const IP_LIMIT = 15; // safety net per IP per day (the real 3-message limit is enforced above)
@@ -76,6 +76,8 @@ export async function POST(req: NextRequest) {
 
     const messages = cleaned.slice(-6);
 
+    let lastError = "";
+
     for (const model of MODELS) {
         try {
             const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -93,19 +95,26 @@ export async function POST(req: NextRequest) {
                 signal: AbortSignal.timeout(15000),
             });
 
-            if (res.status === 401) {
-                return NextResponse.json({ error: "Invalid GROQ_API_KEY" }, { status: 500 });
-            }
             if (res.ok) {
                 const data = await res.json();
                 const reply = data?.choices?.[0]?.message?.content?.trim();
                 if (reply) return NextResponse.json({ reply });
+                lastError = `${model}: empty reply`;
+                continue;
             }
-            // 429 / 5xx / empty reply: try the next model
-        } catch {
-            // timeout or network error: try the next model
+
+            const text = await res.text();
+            lastError = `${model}: ${res.status} ${text}`;
+            console.error("[QuanAI] Groq error ->", lastError);
+
+            if (res.status === 401) {
+                return NextResponse.json({ error: "Invalid GROQ_API_KEY" }, { status: 500 });
+            }
+        } catch (err) {
+            lastError = `${model}: ${String(err)}`;
+            console.error("[QuanAI] Request failed ->", lastError);
         }
     }
 
-    return NextResponse.json({ error: "Chat unavailable" }, { status: 503 });
+    return NextResponse.json({ error: "Chat unavailable", detail: lastError }, { status: 503 });
 }
