@@ -6,9 +6,9 @@ type ChatMessage = { role: "user" | "assistant"; content: string; error?: boolea
 
 const MESSAGE_LIMIT = 3;
 const MAX_CHARS = 300;
-const STORAGE_KEY = "kenai-chat-v1";
+const STORAGE_KEY = "quanai-chat-v1";
 const GREETING =
-    "Hi, I'm KenAI, Ken's portfolio assistant. Ask me about his projects, stack, or experience. You have 3 questions.";
+    "Hi, I'm QuanAI, Ken's portfolio assistant. Ask me about his projects, stack, or experience. You have 3 questions.";
 const SUGGESTIONS = ["What's Ken's tech stack?", "Show me his best projects", "Is Ken available for hire?"];
 
 // Icon follows the site's light/dark MODE (not the icon's own colors).
@@ -17,7 +17,7 @@ const ICONS = {
     dark: "/images/KENAI%20-%20DARK.png",
 };
 
-export default function KenAIChat() {
+export default function QuanAIChat() {
     const [theme, setTheme] = useState<"light" | "dark">("light");
     const [open, setOpen] = useState(false);
     const [messages, setMessages] = useState<ChatMessage[]>([{ role: "assistant", content: GREETING }]);
@@ -135,32 +135,29 @@ export default function KenAIChat() {
     }
 
     return (
-        <div className={`kenai${open ? " is-open" : ""}`}>
+        <div className={`quanai${open ? " is-open" : ""}`}>
             {open && (
-                <section className="kenai-panel" role="dialog" aria-label="Chat with KenAI">
-                    <header className="kenai-head">
-                        <img className="kenai-avatar" src={icon} alt="" />
-                        <div className="kenai-head-copy">
-                            <p>KenAI</p>
-                            <span>
-                <i className="kenai-status" aria-hidden="true" />
-                Ken&apos;s portfolio assistant
-              </span>
+                <section className="quanai-panel" role="dialog" aria-label="Chat with QuanAI">
+                    <header className="quanai-head">
+                        <img className="quanai-avatar" src={icon} alt="" />
+                        <div className="quanai-head-copy">
+                            <p>QuanAI</p>
+                            <span>Ken&apos;s portfolio assistant</span>
                         </div>
-                        <span className="kenai-counter" title="Questions remaining">
+                        <span className="quanai-counter" title="Questions remaining">
               {Math.max(left, 0)}/{MESSAGE_LIMIT} left
             </span>
-                        <button className="kenai-close" type="button" aria-label="Close chat" onClick={() => setOpen(false)}>
+                        <button className="quanai-close" type="button" aria-label="Close chat" onClick={() => setOpen(false)}>
                             <svg viewBox="0 0 24 24" aria-hidden="true">
                                 <path d="M6 6l12 12M18 6 6 18" />
                             </svg>
                         </button>
                     </header>
 
-                    <div className="kenai-body" aria-live="polite">
+                    <div className="quanai-body" aria-live="polite">
                         {messages.map((message, index) => (
                             <div
-                                className={`kenai-msg is-${message.role}${message.error ? " is-error" : ""}`}
+                                className={`quanai-msg is-${message.role}${message.error ? " is-error" : ""}`}
                                 key={`${index}-${message.role}`}
                             >
                                 {message.content}
@@ -168,7 +165,7 @@ export default function KenAIChat() {
                         ))}
 
                         {loading && (
-                            <div className="kenai-msg is-assistant kenai-typing" aria-label="KenAI is typing">
+                            <div className="quanai-msg is-assistant quanai-typing" aria-label="QuanAI is typing">
                                 <span />
                                 <span />
                                 <span />
@@ -176,7 +173,7 @@ export default function KenAIChat() {
                         )}
 
                         {messages.length === 1 && left > 0 && !loading && (
-                            <div className="kenai-suggestions">
+                            <div className="quanai-suggestions">
                                 {SUGGESTIONS.map((suggestion) => (
                                     <button type="button" key={suggestion} onClick={() => void send(suggestion)}>
                                         {suggestion}
@@ -188,12 +185,12 @@ export default function KenAIChat() {
                     </div>
 
                     {left <= 0 ? (
-                        <div className="kenai-limit">
+                        <div className="quanai-limit">
                             <p>You&apos;ve used all {MESSAGE_LIMIT} questions.</p>
                             <a href="mailto:nekquanico@gmail.com">Email Ken instead ↗</a>
                         </div>
                     ) : (
-                        <form className="kenai-form" onSubmit={onSubmit}>
+                        <form className="quanai-form" onSubmit={onSubmit}>
                             <input
                                 ref={inputRef}
                                 value={input}
@@ -211,26 +208,25 @@ export default function KenAIChat() {
                             </button>
                         </form>
                     )}
-                    <p className="kenai-foot">AI can make mistakes. Limited to {MESSAGE_LIMIT} questions.</p>
+                    <p className="quanai-foot">AI can make mistakes. Limited to {MESSAGE_LIMIT} questions.</p>
                 </section>
             )}
 
             <button
-                className="kenai-launcher"
+                className="quanai-launcher"
                 type="button"
-                aria-label={open ? "Close KenAI chat" : "Open KenAI chat"}
+                aria-label={open ? "Close QuanAI chat" : "Open QuanAI chat"}
                 aria-expanded={open}
                 onClick={() => setOpen((value) => !value)}
             >
                 {open ? (
-                    <svg className="kenai-launcher-x" viewBox="0 0 24 24" aria-hidden="true">
+                    <svg className="quanai-launcher-x" viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M6 6l12 12M18 6 6 18" />
                     </svg>
                 ) : (
                     <>
                         <img src={icon} alt="" />
-                        <i className="kenai-status kenai-status-launcher" aria-hidden="true" />
-                        <span className="kenai-tip">Ask KenAI</span>
+                        <span className="quanai-tip">Ask QuanAI</span>
                     </>
                 )}
             </button>

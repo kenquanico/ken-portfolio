@@ -1848,3 +1848,318 @@ main::before {
     animation-iteration-count: 1 !important;
   }
 }
+
+
+/* ---------- QuanAI chatbot ---------- */
+.quanai {
+  --q-bg: #ffffff;
+  --q-fg: #121212;
+  --q-muted: #6f6f6b;
+  --q-line: rgba(0, 0, 0, 0.1);
+  --q-soft: #f3f3f0;
+  --q-user-bg: #121212;
+  --q-user-fg: #fafafa;
+  --q-error: #b42318;
+  --q-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.28), 0 4px 14px rgba(0, 0, 0, 0.08);
+  position: fixed;
+  right: 20px;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  z-index: 80;
+  font-family: inherit;
+  color: var(--q-fg);
+}
+html[data-theme="dark"] .quanai {
+  --q-bg: #141414;
+  --q-fg: #f2f2f0;
+  --q-muted: #9b9b96;
+  --q-line: rgba(255, 255, 255, 0.12);
+  --q-soft: #1f1f1f;
+  --q-user-bg: #f2f2f0;
+  --q-user-fg: #121212;
+  --q-error: #ff8a80;
+  --q-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.7), 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+.quanai svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Launcher (logo only, no background) */
+.quanai-launcher {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--q-fg);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.quanai-launcher:hover { transform: scale(1.08); }
+.quanai-launcher:active { transform: scale(0.95); }
+.quanai-launcher img {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  object-fit: contain;
+  border-radius: 0;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.25));
+}
+
+/* When open, the launcher turns into a small close button */
+.quanai.is-open .quanai-launcher {
+  width: 48px;
+  height: 48px;
+  margin: 18px 18px 0 0;
+  border: 1px solid var(--q-line);
+  border-radius: 50%;
+  background: var(--q-bg);
+  box-shadow: var(--q-shadow);
+}
+.quanai-launcher-x { width: 22px; height: 22px; }
+
+.quanai-tip {
+  position: absolute;
+  right: calc(100% + 6px);
+  padding: 6px 11px;
+  border: 1px solid var(--q-line);
+  border-radius: 999px;
+  background: var(--q-bg);
+  color: var(--q-fg);
+  font-size: 0.78rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(6px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.quanai-launcher:hover .quanai-tip { opacity: 1; transform: none; }
+
+/* Panel */
+.quanai-panel {
+  position: absolute;
+  right: 0;
+  bottom: 74px;
+  display: flex;
+  flex-direction: column;
+  width: min(380px, calc(100vw - 32px));
+  height: min(540px, calc(100dvh - 130px));
+  overflow: hidden;
+  border: 1px solid var(--q-line);
+  border-radius: 22px;
+  background: var(--q-bg);
+  box-shadow: var(--q-shadow);
+  transform-origin: bottom right;
+  animation: quanai-pop 0.22s ease-out;
+}
+@keyframes quanai-pop {
+  from { opacity: 0; transform: translateY(10px) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+
+.quanai-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--q-line);
+}
+.quanai-avatar {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.quanai-head-copy { flex: 1; min-width: 0; }
+.quanai-head-copy p { margin: 0; font-size: 0.98rem; font-weight: 600; line-height: 1.2; }
+.quanai-head-copy span { display: block; margin-top: 3px; color: var(--q-muted); font-size: 0.72rem; }
+.quanai-counter {
+  padding: 4px 9px;
+  border: 1px solid var(--q-line);
+  border-radius: 999px;
+  color: var(--q-muted);
+  font-size: 0.7rem;
+  white-space: nowrap;
+}
+.quanai-close {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--q-muted);
+  cursor: pointer;
+}
+.quanai-close:hover { background: var(--q-soft); color: var(--q-fg); }
+.quanai-close svg { width: 16px; height: 16px; }
+
+/* Messages */
+.quanai-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 14px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.quanai-msg {
+  max-width: 86%;
+  padding: 10px 13px;
+  border-radius: 16px;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  animation: quanai-in 0.2s ease-out;
+}
+@keyframes quanai-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+.quanai-msg.is-assistant {
+  align-self: flex-start;
+  border-bottom-left-radius: 5px;
+  background: var(--q-soft);
+  color: var(--q-fg);
+}
+.quanai-msg.is-user {
+  align-self: flex-end;
+  border-bottom-right-radius: 5px;
+  background: var(--q-user-bg);
+  color: var(--q-user-fg);
+}
+.quanai-msg.is-error {
+  border: 1px solid var(--q-error);
+  color: var(--q-error);
+  background: transparent;
+}
+
+.quanai-typing { display: flex; gap: 4px; padding: 14px 15px; }
+.quanai-typing span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--q-muted);
+  animation: quanai-dot 1.1s infinite ease-in-out;
+}
+.quanai-typing span:nth-child(2) { animation-delay: 0.15s; }
+.quanai-typing span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes quanai-dot {
+  0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-4px); }
+}
+
+.quanai-suggestions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+  margin-top: 4px;
+}
+.quanai-suggestions button {
+  padding: 8px 13px;
+  border: 1px solid var(--q-line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--q-fg);
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.quanai-suggestions button:hover { background: var(--q-soft); }
+
+/* Input */
+.quanai-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 12px;
+  padding: 6px 6px 6px 14px;
+  border: 1px solid var(--q-line);
+  border-radius: 999px;
+  background: var(--q-soft);
+}
+.quanai-form:focus-within { border-color: var(--q-fg); }
+.quanai-form input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--q-fg);
+  font: inherit;
+  font-size: 0.88rem;
+}
+.quanai-form input::placeholder { color: var(--q-muted); }
+.quanai-form button {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--q-user-bg);
+  color: var(--q-user-fg);
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+.quanai-form button:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.quanai-limit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin: 0 12px;
+  padding: 12px;
+  border: 1px dashed var(--q-line);
+  border-radius: 14px;
+  text-align: center;
+  font-size: 0.85rem;
+}
+.quanai-limit p { margin: 0; color: var(--q-muted); }
+.quanai-limit a {
+  color: var(--q-fg);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.quanai-foot {
+  margin: 0;
+  padding: 8px 12px 12px;
+  text-align: center;
+  color: var(--q-muted);
+  font-size: 0.68rem;
+}
+
+@media (max-width: 520px) {
+  .quanai { right: 8px; bottom: calc(8px + env(safe-area-inset-bottom, 0px)); }
+  .quanai-launcher { width: 72px; height: 72px; }
+  .quanai-panel { width: calc(100vw - 24px); height: min(72dvh, 560px); bottom: 64px; }
+  .quanai-tip { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .quanai-panel, .quanai-msg, .quanai-typing span { animation: none; }
+  .quanai-launcher { transition: none; }
+}

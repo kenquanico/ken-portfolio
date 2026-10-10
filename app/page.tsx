@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
+import KenAIChat from "./components/ai";
 
 const experiences = [
   {
@@ -1533,6 +1534,7 @@ export default function Home() {
           </footer>}
 
         </main>
+        <KenAIChat />
       </>
   );
 }
