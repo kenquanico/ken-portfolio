@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
+import { playSound } from "./sounds";
 
 type ChatMessage = { role: "user" | "assistant"; content: string; error?: boolean };
 
@@ -50,6 +51,16 @@ export default function QuanAIChat() {
         setMessages([{ role: "assistant", content: GREETING }]);
         setUsed(0);
         setInput("");
+    }
+
+    function openPanel() {
+        playSound("aiOpen");
+        setOpen(true);
+    }
+
+    function closePanel() {
+        playSound("aiClose");
+        setOpen(false);
     }
 
     useEffect(() => {
@@ -134,7 +145,10 @@ export default function QuanAIChat() {
         if (!open) return;
         const timer = window.setTimeout(() => inputRef.current?.focus(), 120);
         const onKey = (event: KeyboardEvent) => {
-            if (event.key === "Escape") setOpen(false);
+            if (event.key === "Escape") {
+                playSound("aiClose");
+                setOpen(false);
+            }
         };
         document.addEventListener("keydown", onKey);
         return () => {
@@ -207,7 +221,13 @@ export default function QuanAIChat() {
                                 ↺
                             </button>
                         )}
-                        <button className="quanai-close" type="button" aria-label="Close chat" onClick={() => setOpen(false)}>
+                        <button
+                            className="quanai-close"
+                            type="button"
+                            aria-label="Close chat"
+                            data-cuelume-silent=""
+                            onClick={closePanel}
+                        >
                             <svg viewBox="0 0 24 24" aria-hidden="true">
                                 <path d="M6 6l12 12M18 6 6 18" />
                             </svg>
@@ -226,10 +246,7 @@ export default function QuanAIChat() {
 
                         {loading && (
                             <div className="quanai-msg is-assistant quanai-typing" role="status" aria-label="QuanAI is typing">
-                                {/* Same loader used by the "Ask me anything" overlay */}
-                                <span className="quanai-loader-wrap" aria-hidden="true">
-                                    <div className="loader" />
-                                </span>
+                                <span className="quanai-loader" aria-hidden="true" />
                             </div>
                         )}
 
@@ -280,7 +297,8 @@ export default function QuanAIChat() {
                 type="button"
                 aria-label={open ? "Close QuanAI chat" : "Open QuanAI chat"}
                 aria-expanded={open}
-                onClick={() => setOpen((value) => !value)}
+                data-cuelume-silent=""
+                onClick={() => (open ? closePanel() : openPanel())}
             >
                 {open ? (
                     <svg className="quanai-launcher-x" viewBox="0 0 24 24" aria-hidden="true">

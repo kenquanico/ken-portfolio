@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import KenAIChat from "./components/ai";
+import { playSound, unlockSounds } from "./components/sounds";
 
 const experiences = [
   {
@@ -538,7 +539,6 @@ export default function Home() {
   const [askStage, setAskStage] = useState<AskStage>("input");
   const [askQuestion, setAskQuestion] = useState("");
   const [askMessage, setAskMessage] = useState("what do you want to ask?");
-  const audioContextRef = useRef<AudioContext | null>(null);
   const askInputRef = useRef<HTMLInputElement | null>(null);
   const askTimersRef = useRef<number[]>([]);
   const [githubActivity, setGithubActivity] = useState<Array<{ date: string; count: number; level: number } | null>>(
@@ -751,143 +751,42 @@ export default function Home() {
 
   useEffect(() => () => clearAskTimers(), []);
 
+  // Click sound: plays /sounds/general-click.mp4 on every link / button press.
+  // Elements with data-cuelume-silent are skipped (the AI launcher + sound toggle play their own sounds).
+  // Mute is respected inside playSound() via the "ken-portfolio-sound" localStorage key.
   useEffect(() => {
-    type SoundCue = "tick" | "press" | "release";
-    type AudioWindow = Window & { webkitAudioContext?: typeof AudioContext };
-
-    const soundProfiles: Record<SoundCue, {
-      duration: number;
-      volume: number;
-      voices: Array<{ from: number; to: number; type: OscillatorType }>;
-    }> = {
-      tick: {
-        duration: .045,
-        volume: .03,
-        voices: [
-          { from: 1080, to: 1480, type: "sine" },
-          { from: 620, to: 920, type: "triangle" },
-        ],
-      },
-      press: {
-        duration: .075,
-        volume: .045,
-        voices: [
-          { from: 280, to: 180, type: "triangle" },
-          { from: 760, to: 480, type: "sine" },
-        ],
-      },
-      release: {
-        duration: .085,
-        volume: .036,
-        voices: [
-          { from: 430, to: 720, type: "sine" },
-          { from: 860, to: 1180, type: "triangle" },
-        ],
-      },
-    };
-
-    function getAudioContext() {
-      if (audioContextRef.current && audioContextRef.current.state !== "closed") {
-        return audioContextRef.current;
-      }
-
-      const AudioContextClass = window.AudioContext ?? (window as AudioWindow).webkitAudioContext;
-      if (!AudioContextClass) return null;
-
-      audioContextRef.current = new AudioContextClass();
-      return audioContextRef.current;
-    }
-
-    function unlockAudio() {
-      if (!soundEnabled) return;
-      const audio = getAudioContext();
-      if (!audio) return;
-
-      if (audio.state === "suspended") void audio.resume();
-
-      // A silent one-sample source unlocks Web Audio during the first iOS touch.
-      const source = audio.createBufferSource();
-      source.buffer = audio.createBuffer(1, 1, 22050);
-      source.connect(audio.destination);
-      source.start();
-    }
-
-    function playSound(cue: SoundCue) {
-      const profile = soundProfiles[cue];
-      const audio = getAudioContext();
-      if (!audio) return;
-
-      const renderCue = () => {
-        const master = audio.createGain();
-        const filter = audio.createBiquadFilter();
-        const now = audio.currentTime;
-
-        filter.type = "lowpass";
-        filter.frequency.setValueAtTime(cue === "press" ? 1800 : 2600, now);
-        master.gain.setValueAtTime(.0001, now);
-        master.gain.exponentialRampToValueAtTime(profile.volume, now + .006);
-        master.gain.exponentialRampToValueAtTime(.0001, now + profile.duration);
-        filter.connect(master);
-        master.connect(audio.destination);
-
-        profile.voices.forEach((voice, index) => {
-          const oscillator = audio.createOscillator();
-          oscillator.type = voice.type;
-          oscillator.detune.setValueAtTime(index === 0 ? -4 : 7, now);
-          oscillator.frequency.setValueAtTime(voice.from, now);
-          oscillator.frequency.exponentialRampToValueAtTime(voice.to, now + profile.duration);
-          oscillator.connect(filter);
-          oscillator.start(now + index * .002);
-          oscillator.stop(now + profile.duration);
-        });
-      };
-
-      if (audio.state === "suspended") {
-        void audio.resume().then(renderCue).catch(() => undefined);
-      } else {
-        renderCue();
-      }
-    }
-
-    function interactiveTarget(event: PointerEvent) {
+    function soundTarget(event: Event) {
       if (!(event.target instanceof Element)) return null;
       const target = event.target.closest<HTMLElement>("a, button");
-      return target?.hasAttribute("data-cuelume-silent") ? null : target;
+      if (!target || target.hasAttribute("data-cuelume-silent")) return null;
+      if (target.matches(":disabled")) return null;
+      return target;
     }
 
-    function playHover(event: PointerEvent) {
-      if (!soundEnabled || !(event.target instanceof Element)) return;
-      const target = event.target.closest<HTMLElement>("[data-cuelume-hover='tick']");
-      if (!target || (event.relatedTarget instanceof Node && target.contains(event.relatedTarget))) return;
-      playSound("tick");
+    function onPointerDown(event: PointerEvent) {
+      unlockSounds();
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      if (soundTarget(event)) playSound("general");
     }
 
-    function playPress(event: PointerEvent) {
-      if (!soundEnabled || !interactiveTarget(event)) return;
-      playSound("press");
+    // Keyboard activation (Enter / Space on a focused link or button) has detail === 0.
+    function onClick(event: MouseEvent) {
+      if (event.detail !== 0) return;
+      if (soundTarget(event)) playSound("general");
     }
 
-    function playRelease(event: PointerEvent) {
-      if (!soundEnabled || !interactiveTarget(event)) return;
-      playSound("release");
+    function onTouchStart() {
+      unlockSounds();
     }
 
-    document.addEventListener("touchstart", unlockAudio, { capture: true, passive: true });
-    document.addEventListener("pointerover", playHover);
-    document.addEventListener("pointerdown", playPress);
-    document.addEventListener("pointerup", playRelease);
+    document.addEventListener("touchstart", onTouchStart, { capture: true, passive: true });
+    document.addEventListener("pointerdown", onPointerDown, true);
+    document.addEventListener("click", onClick, true);
     return () => {
-      document.removeEventListener("touchstart", unlockAudio, { capture: true });
-      document.removeEventListener("pointerover", playHover);
-      document.removeEventListener("pointerdown", playPress);
-      document.removeEventListener("pointerup", playRelease);
+      document.removeEventListener("touchstart", onTouchStart, { capture: true });
+      document.removeEventListener("pointerdown", onPointerDown, true);
+      document.removeEventListener("click", onClick, true);
     };
-  }, [soundEnabled]);
-
-  useEffect(() => () => {
-    const audio = audioContextRef.current;
-    audioContextRef.current = null;
-    if (audio && audio.state !== "closed") void audio.close();
   }, []);
 
   useEffect(() => {
@@ -945,6 +844,8 @@ export default function Home() {
     const next = !soundEnabled;
     setSoundEnabled(next);
     window.localStorage.setItem("ken-portfolio-sound", next ? "on" : "off");
+    // Confirm with a click when turning sound back on (the toggle itself is silent when muting).
+    if (next) playSound("general");
   }
 
   return (
@@ -1242,7 +1143,7 @@ export default function Home() {
               {pathname === "/" ? (
                   <div className="certification-wall">
                     {homepageCertifications.map((certificate, index) => (
-                        <a className="certification-card" href={certificate.url} key={certificate.url} target="_blank" rel="noreferrer" aria-label={`Verify ${certificate.title} certificate`} style={certificationCardStyle(index)} data-cuelume-hover="tick" data-cuelume-press="press" data-cuelume-release="release">
+                        <a className="certification-card" href={certificate.url} key={certificate.url} target="_blank" rel="noreferrer" aria-label={`Verify ${certificate.title} certificate`} style={certificationCardStyle(index)}>
                           <span className="certification-card-frame" aria-hidden="true" />
                           <img src={certificate.logo} alt={`${certificate.issuer} logo`} />
                           <p className="certification-title">{certificate.title}</p>
@@ -1261,7 +1162,7 @@ export default function Home() {
                           </div>
                           <div className="certification-wall">
                             {certifications.filter((certificate) => certificate.category === category).map((certificate, index) => (
-                                <a className="certification-card" href={certificate.url} key={certificate.url} target="_blank" rel="noreferrer" aria-label={`Verify ${certificate.title} certificate`} style={certificationCardStyle(index)} data-cuelume-hover="tick" data-cuelume-press="press" data-cuelume-release="release">
+                                <a className="certification-card" href={certificate.url} key={certificate.url} target="_blank" rel="noreferrer" aria-label={`Verify ${certificate.title} certificate`} style={certificationCardStyle(index)}>
                                   <span className="certification-card-frame" aria-hidden="true" />
                                   <img src={certificate.logo} alt={`${certificate.issuer} logo`} />
                                   <p className="certification-title">{certificate.title}</p>
