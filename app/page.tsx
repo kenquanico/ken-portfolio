@@ -287,7 +287,7 @@ const sampleProjects = [
     logo: "/project-logos/striq-icon.svg",
     description:
         "Creator-rights operations platform built with Next.js and Supabase that checks every paid creator ad against its actual contract terms, powered by StriqAI, an in-app assistant that helps agencies renew, replace, or pause at-risk usage.",
-    url: "https://www.striq-ai.app",
+    url: "https://www.striqai.app",
   },
   {
     name: "Elio",
