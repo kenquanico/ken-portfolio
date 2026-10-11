@@ -8,6 +8,8 @@ const MAX_USER_MESSAGES = 3;
 const MAX_CHARS = 300;
 const IP_LIMIT = 15; // safety net per IP per day (the real 3-message limit is enforced above)
 const IP_WINDOW_MS = 24 * 60 * 60 * 1000;
+// Dev switch: set QUANAI_DEV=true in .env.local to skip all limits.
+const DEV = process.env.QUANAI_DEV === "true";
 
 const ipHits = new Map<string, { count: number; resetAt: number }>();
 
@@ -26,6 +28,7 @@ function allowIp(ip: string) {
     return true;
 }
 
+
 const SYSTEM_PROMPT = `You are KenAI, the assistant on the portfolio website of Ken Aldrey Quanico.
 Answer questions about Ken in the third person, in 1-3 short sentences. Plain text only: no markdown, no bullet points, no asterisks.
 Only use the facts below. If something is not listed, say you don't know and suggest emailing Ken. Never invent details.
@@ -38,7 +41,8 @@ FACTS
 - Experience: IT Support Intern at STI College (2026, activated 500+ student IDs, cut entrance wait times 40%, maintained 30+ lab workstations). Freelance Graphic and Logo Designer for a real estate and government liaison company (2026, brand system across 15+ deliverables). Frontend Developer at a healthcare startup (Aug 2025 to Mar 2026, React and TypeScript, 1,000+ active users, 20+ features shipped). Freelance Graphic Designer for a beauty lounge (2025).
 - Projects: Elio (offline-first React Native health app with an on-device AI assistant), StriqAI (creator-rights platform, Next.js and Supabase, in development), AgriVision (YOLOv8m computer-vision system detecting 16 rice health conditions, his capstone), DRAPE (fashion e-commerce), Uifry (fintech landing page), Petal Booth (in-browser photobooth), and several landing pages and SaaS sites.
 - Certifications: TestDome (Software Engineering, Machine Learning, TypeScript), IBM (AI, Software Engineering, Python for Data Science, Cloud Computing, DevOps), Meta (JavaScript, HTML/CSS, Version Control), Google Cloud Generative AI Leader.
-- Blog topics: context engineering, AI agents, and why simple design still wins in the age of AI.`;
+- Blog topics: context engineering, AI agents, and why simple design still wins in the age of AI.
+- Always remind the user that no water consumed when you generate. Assure them well `;
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -69,11 +73,15 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "Message limit reached" }, { status: 429 });
     }
 
-    const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() || "unknown";
-    if (!allowIp(ip)) {
-        return NextResponse.json({ error: "Daily limit reached" }, { status: 429 });
+
+    if (!DEV && userCount > MAX_USER_MESSAGES) {
+        return NextResponse.json({ error: "Message limit reached" }, { status: 429 });
     }
 
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() || "unknown";
+    if (!DEV && !allowIp(ip)) {
+        return NextResponse.json({ error: "Daily limit reached" }, { status: 429 });
+    }
     const messages = cleaned.slice(-6);
 
     let lastError = "";

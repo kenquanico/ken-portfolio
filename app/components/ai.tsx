@@ -6,16 +6,30 @@ type ChatMessage = { role: "user" | "assistant"; content: string; error?: boolea
 
 const MESSAGE_LIMIT = 3;
 const MAX_CHARS = 300;
-const STORAGE_KEY = "quanai-chat-v1";
+const STORAGE_KEY = "quanai-chat-v2"; // bumped so old saved chats (no date) are discarded
 const GREETING =
-    "Hi, I'm QuanAI, Ken's portfolio assistant. Ask me about his projects, stack, or experience. You have 3 questions.";
+    "Hi, I'm QuanAI, Ken's portfolio assistant. Ask me about his projects, stack, or experience. You have 3 questions per day.";
 const SUGGESTIONS = ["What's Ken's tech stack?", "Show me his best projects", "Is Ken available for hire?"];
 
-// Icon follows the site's light/dark MODE (not the icon's own colors).
+// Dev switch: set NEXT_PUBLIC_QUANAI_DEV=true in .env.local to remove the limit.
+const DEV = process.env.NEXT_PUBLIC_QUANAI_DEV === "true";
+
 const ICONS = {
     light: "/images/KENAI%20-%20LIGHT.png",
     dark: "/images/KENAI%20-%20DARK.png",
 };
+
+// Visitor's LOCAL calendar day, e.g. "2026-10-11". Changes at their local 12:00 AM.
+function todayKey() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function msUntilLocalMidnight() {
+    const now = new Date();
+    const next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
+    return next.getTime() - now.getTime();
+}
 
 export default function QuanAIChat() {
     const [theme, setTheme] = useState<"light" | "dark">("light");
@@ -27,11 +41,17 @@ export default function QuanAIChat() {
     const [ready, setReady] = useState(false);
     const endRef = useRef<HTMLDivElement | null>(null);
     const inputRef = useRef<HTMLInputElement | null>(null);
+    const dayRef = useRef<string>("");
 
-    const left = MESSAGE_LIMIT - used;
+    const left = DEV ? Infinity : MESSAGE_LIMIT - used;
     const icon = ICONS[theme];
 
-    // Follow the site's theme (your page sets data-theme on <html>).
+    function resetChat() {
+        setMessages([{ role: "assistant", content: GREETING }]);
+        setUsed(0);
+        setInput("");
+    }
+
     useEffect(() => {
         const root = document.documentElement;
         const read = () => setTheme(root.dataset.theme === "dark" ? "dark" : "light");
@@ -41,14 +61,19 @@ export default function QuanAIChat() {
         return () => observer.disconnect();
     }, []);
 
-    // Restore the saved chat so a refresh does not reset the 3-message limit.
+    // Restore saved chat ONLY if it was saved today (visitor's local date).
     useEffect(() => {
+        dayRef.current = todayKey();
         try {
             const raw = window.localStorage.getItem(STORAGE_KEY);
             if (raw) {
-                const saved = JSON.parse(raw) as { messages?: ChatMessage[]; used?: number };
-                if (Array.isArray(saved.messages) && saved.messages.length) setMessages(saved.messages);
-                if (typeof saved.used === "number") setUsed(Math.min(Math.max(saved.used, 0), MESSAGE_LIMIT));
+                const saved = JSON.parse(raw) as { day?: string; messages?: ChatMessage[]; used?: number };
+                if (saved.day === dayRef.current) {
+                    if (Array.isArray(saved.messages) && saved.messages.length) setMessages(saved.messages);
+                    if (typeof saved.used === "number") setUsed(Math.min(Math.max(saved.used, 0), MESSAGE_LIMIT));
+                } else {
+                    window.localStorage.removeItem(STORAGE_KEY);
+                }
             }
         } catch {
             /* ignore */
@@ -56,12 +81,45 @@ export default function QuanAIChat() {
         setReady(true);
     }, []);
 
+    // Reset at the visitor's local midnight (even if the tab stays open),
+    // and re-check when they return to the tab (timers pause when asleep/backgrounded).
+    useEffect(() => {
+        if (!ready) return;
+        let timer: number;
+
+        const check = () => {
+            const today = todayKey();
+            if (today !== dayRef.current) {
+                dayRef.current = today;
+                resetChat();
+            }
+        };
+        const arm = () => {
+            timer = window.setTimeout(() => {
+                check();
+                arm();
+            }, msUntilLocalMidnight() + 1000);
+        };
+        const onVisible = () => {
+            if (document.visibilityState === "visible") check();
+        };
+
+        arm();
+        document.addEventListener("visibilitychange", onVisible);
+        window.addEventListener("focus", check);
+        return () => {
+            window.clearTimeout(timer);
+            document.removeEventListener("visibilitychange", onVisible);
+            window.removeEventListener("focus", check);
+        };
+    }, [ready]);
+
     useEffect(() => {
         if (!ready) return;
         try {
             window.localStorage.setItem(
                 STORAGE_KEY,
-                JSON.stringify({ messages: messages.filter((m) => !m.error), used }),
+                JSON.stringify({ day: dayRef.current, messages: messages.filter((m) => !m.error), used }),
             );
         } catch {
             /* ignore */
@@ -87,7 +145,7 @@ export default function QuanAIChat() {
 
     async function send(text: string) {
         const content = text.trim().slice(0, MAX_CHARS);
-        if (!content || loading || used >= MESSAGE_LIMIT) return;
+        if (!content || loading || (!DEV && used >= MESSAGE_LIMIT)) return;
 
         const before = messages;
         const history: ChatMessage[] = [...before, { role: "user", content }];
@@ -97,7 +155,6 @@ export default function QuanAIChat() {
         setUsed((n) => n + 1);
 
         const fail = (message: string, limitReached = false) => {
-            // Failed requests do not count against the user's 3 messages.
             setUsed(limitReached ? MESSAGE_LIMIT : (n) => Math.max(0, n - 1));
             setMessages([...before, { role: "assistant", content: message, error: true }]);
             setInput(content);
@@ -133,7 +190,6 @@ export default function QuanAIChat() {
         event.preventDefault();
         void send(input);
     }
-
     return (
         <div className={`quanai${open ? " is-open" : ""}`}>
             {open && (
@@ -144,8 +200,13 @@ export default function QuanAIChat() {
                             <p>QuanAI</p>
                         </div>
                         <span className="quanai-counter" title="Questions remaining">
-              {Math.max(left, 0)}/{MESSAGE_LIMIT} left
-            </span>
+    {DEV ? "DEV ∞" : `${Math.max(left, 0)}/${MESSAGE_LIMIT} left`}
+</span>
+                        {DEV && (
+                            <button type="button" className="quanai-close" aria-label="Reset chat (dev)" onClick={resetChat} title="Reset chat (dev)">
+                                ↺
+                            </button>
+                        )}
                         <button className="quanai-close" type="button" aria-label="Close chat" onClick={() => setOpen(false)}>
                             <svg viewBox="0 0 24 24" aria-hidden="true">
                                 <path d="M6 6l12 12M18 6 6 18" />
@@ -185,7 +246,7 @@ export default function QuanAIChat() {
 
                     {left <= 0 ? (
                         <div className="quanai-limit">
-                            <p>You&apos;ve used all {MESSAGE_LIMIT} questions.</p>
+                            <p>You&apos;ve used all {MESSAGE_LIMIT} questions for today.</p>
                             <a href="mailto:nekquanico@gmail.com">Email Ken instead ↗</a>
                         </div>
                     ) : (
@@ -207,8 +268,9 @@ export default function QuanAIChat() {
                             </button>
                         </form>
                     )}
-                    <p className="quanai-foot">AI can make mistakes. Limited to {MESSAGE_LIMIT} questions.</p>
-                </section>
+                    <p className="quanai-foot">
+                        AI can make mistakes. {DEV ? "Dev mode: no limit." : `Limited to ${MESSAGE_LIMIT} questions per day.`}
+                    </p>                </section>
             )}
 
             <button
