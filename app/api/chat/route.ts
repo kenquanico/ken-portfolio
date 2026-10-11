@@ -78,6 +78,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "Message limit reached" }, { status: 429 });
     }
 
+
     const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() || "unknown";
     if (!DEV && !allowIp(ip)) {
         return NextResponse.json({ error: "Daily limit reached" }, { status: 429 });
