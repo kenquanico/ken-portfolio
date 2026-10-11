@@ -200,8 +200,8 @@ export default function QuanAIChat() {
                             <p>QuanAI</p>
                         </div>
                         <span className="quanai-counter" title="Questions remaining">
-    {DEV ? "DEV ∞" : `${Math.max(left, 0)}/${MESSAGE_LIMIT} left`}
-</span>
+                            {DEV ? "DEV ∞" : `${Math.max(left, 0)}/${MESSAGE_LIMIT} left`}
+                        </span>
                         {DEV && (
                             <button type="button" className="quanai-close" aria-label="Reset chat (dev)" onClick={resetChat} title="Reset chat (dev)">
                                 ↺
@@ -225,10 +225,11 @@ export default function QuanAIChat() {
                         ))}
 
                         {loading && (
-                            <div className="quanai-msg is-assistant quanai-typing" aria-label="QuanAI is typing">
-                                <span />
-                                <span />
-                                <span />
+                            <div className="quanai-msg is-assistant quanai-typing" role="status" aria-label="QuanAI is typing">
+                                {/* Same loader used by the "Ask me anything" overlay */}
+                                <span className="quanai-loader-wrap" aria-hidden="true">
+                                    <div className="loader" />
+                                </span>
                             </div>
                         )}
 
@@ -270,7 +271,8 @@ export default function QuanAIChat() {
                     )}
                     <p className="quanai-foot">
                         AI can make mistakes. {DEV ? "Dev mode: no limit." : `Limited to ${MESSAGE_LIMIT} questions per day.`}
-                    </p>                </section>
+                    </p>
+                </section>
             )}
 
             <button
